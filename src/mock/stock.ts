@@ -27,23 +27,23 @@ const getMedicinePage = (config: IPage<never>): IMedicine[] => {
 
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/api/medicine/page'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/stock/page'), 'post', (options) => {
       const config = JSON.parse(options.body)
       const resultList = getMedicinePage(config)
       return successResponseWrap({ resultList })
     })
 
-    Mock.mock(new RegExp('/api/medicine/add'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/stock/add'), 'post', (options) => {
       const data = JSON.parse(options.body) as IEditMedicine
       return successResponseWrap({ message: '新增药品成功', status: 200 })
     })
 
-    Mock.mock(new RegExp('/api/medicine/update'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/stock/update'), 'post', (options) => {
       const data = JSON.parse(options.body) as IEditMedicine
       return successResponseWrap({ message: '更新药品成功', status: 200 })
     })
 
-    Mock.mock(new RegExp('/api/medicine/delete'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/stock/delete'), 'post', (options) => {
       const index = JSON.parse(options.body)?.index
       return successResponseWrap({ message: '删除药品成功', status: 200 })
     })

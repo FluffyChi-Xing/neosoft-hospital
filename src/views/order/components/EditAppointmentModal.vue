@@ -2,25 +2,17 @@
   <el-dialog v-model="visible" draggable :title="title" :close-on-click-modal="false" width="500px">
     <template #default>
       <el-form :model="form">
-        <el-form-item label="药品名称" required>
-          <el-input v-model="form.name" placeholder="请输入药品名称" />
+        <el-form-item label="预约时间" required>
+          <el-date-picker
+            v-model="form.appointmentTime"
+            type="datetime"
+            placeholder="请选择预约时间"
+          />
         </el-form-item>
-        <el-form-item label="规格" required>
-          <el-input v-model="form.specification" placeholder="请输入药品规格" />
-        </el-form-item>
-        <el-form-item label="单位" required>
-          <el-input v-model="form.unit" placeholder="请输入药品单位" />
-        </el-form-item>
-        <el-form-item label="价格" required>
-          <el-input-number v-model="form.price" :min="0" placeholder="请输入药品价格" />
-        </el-form-item>
-        <el-form-item label="库存" required>
-          <el-input-number v-model="form.stock" :min="0" placeholder="请输入药品库存" />
-        </el-form-item>
-        <el-form-item label="状态" required>
+        <el-form-item v-permission="'doctor'" label="状态" required>
           <el-radio-group v-model="form.status">
             <el-radio-button
-              v-for="(item, index) in MEDICINE_STATUS"
+              v-for="(item, index) in APPOINTMENT_STATUS"
               :key="index"
               :value="item.value"
               >{{ item.key }}</el-radio-button
@@ -39,15 +31,15 @@
 </template>
 
 <script setup lang="ts">
-import { MEDICINE_STATUS } from '@/const'
-import { IEditMedicine, IMedicine } from '@/types/common'
-import { Message } from '@/utils'
-import { addMedicine, updateMedicine } from '@/server/api/medicine'
+import { APPOINTMENT_STATUS } from '@/const'
+import { IAppointment, IEditAppointment } from '@/types/common'
+import { getUserId, Message } from '@/utils'
+import { addAppointment, updateAppointment } from '@/server/api/order'
 
 type addProp = {
   show: boolean
   mode: 'add' | 'edit'
-  data: IMedicine | null
+  data: IAppointment | null
 }
 
 const props = withDefaults(defineProps<addProp>(), {
@@ -58,13 +50,10 @@ const props = withDefaults(defineProps<addProp>(), {
 
 const { show, mode, data } = toRefs(props)
 
-const form = reactive<IEditMedicine>({
+const form = reactive({
   id: '',
-  name: '',
-  specification: '',
-  unit: '',
-  price: 0,
-  stock: 0,
+  patientId: getUserId(),
+  appointmentTime: '',
   status: 0,
 })
 
@@ -76,35 +65,29 @@ const visible = computed({
 })
 
 const title = computed(() => {
-  return mode.value === 'add' ? '新增药品' : '编辑药品'
+  return mode.value === 'add' ? '新增预约' : '编辑预约'
 })
 
 const initData = () => {
   if (mode.value === 'edit') {
     form.id = data.value?.id ?? ''
-    form.name = data.value?.name ?? ''
-    form.specification = data.value?.specification ?? ''
-    form.unit = data.value?.unit ?? ''
-    form.price = data.value?.price ?? 0
-    form.stock = data.value?.stock ?? 0
+    form.patientId = data.value?.patientId ?? ''
+    form.appointmentTime = data.value?.appointmentTime ?? ''
     form.status = data.value?.status ?? 0
   } else {
     form.id = ''
-    form.name = ''
-    form.specification = ''
-    form.unit = ''
-    form.price = 0
-    form.stock = 0
+    form.patientId = ''
+    form.appointmentTime = ''
     form.status = 0
   }
 }
 
 const handleConfirm = async () => {
-  const params: IEditMedicine = {
+  const params: IEditAppointment = {
     ...form,
   }
   if (mode.value === 'add') {
-    const res: never = await addMedicine(params)
+    const res: never = await addAppointment(params)
     const { message, status } = res
     if (status === 200) {
       Message.success(message)
@@ -112,7 +95,7 @@ const handleConfirm = async () => {
       Message.warning(message)
     }
   } else {
-    const res: never = await updateMedicine(params)
+    const res: never = await updateAppointment(params)
     const { status, message } = res
     if (status === 200) {
       Message.success(message)

@@ -1,8 +1,8 @@
 <template>
   <div class="w-full h-full flex flex-col gap-4">
-    <PageHeader content="预约管理">
+    <PageHeader content="订单管理">
       <template #action>
-        <el-button v-permission="'patient'" type="primary" @click="addAppointment">预约</el-button>
+        <el-button type="primary" @click="addAppointment">下单</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
       </template>
     </PageHeader>
@@ -10,7 +10,7 @@
       <div class="w-full h-full flex">
         <el-card shadow="never" class="w-full h-full">
           <el-table v-loading="isLoading" :data="dataList" border stripe fit>
-            <!-- appointment -->
+            <!-- order -->
             <el-table-column prop="id" label="ID" />
             <el-table-column prop="patientId" label="患者ID" />
             <el-table-column prop="appointmentTime" label="预约时间" />
@@ -27,7 +27,6 @@
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
                   <el-button
-                    v-permission="'doctor'"
                     type="warning"
                     size="small"
                     @click="handleAppointmentFinish(row?.id)"
@@ -81,8 +80,8 @@ import {
   deleteAppointment,
   finishAppointment,
   queryAppointmentPage,
-} from '@/server/api/appointment'
-import EditAppointmentModal from '@/views/appointment/components/EditAppointmentModal.vue'
+} from '@/server/api/order'
+import EditAppointmentModal from '@/views/order/components/EditAppointmentModal.vue'
 
 const isLoading = ref<boolean>(false)
 const modalMode = ref<'add' | 'edit'>('add')

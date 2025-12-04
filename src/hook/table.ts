@@ -14,7 +14,7 @@ const useTable = (config: ITableConfig<never> = {}) => {
     const { status, data, message } = await fetchData(params)
     if (status === 200) {
       const { resultList } = data
-      console.log('getData', resultList)
+      // console.log('getData', resultList)
       return resultList || []
     } else {
       Message.warning(message)

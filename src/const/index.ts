@@ -1,7 +1,7 @@
 import { userStoreType } from '../store/user/types'
 import { IKVType } from '../types'
 
-export const PAGE_HEADER_CONTENT = '东软云医院管理系统 - 闫家辉'
+export const PAGE_HEADER_CONTENT = '开放原子餐饮管理系统'
 
 export const DISEASE_LIST = [
   '高血压',

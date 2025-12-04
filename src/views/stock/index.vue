@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full flex flex-col gap-4">
-    <PageHeader content="药品管理">
+    <PageHeader content="库存管理">
       <template #action>
         <el-button v-permission="'doctor'" type="primary" @click="addMedicine">新增药品</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
@@ -67,7 +67,7 @@
       </div>
     </div>
   </div>
-  <EditMedicineModal
+  <EditStockModal
     v-model:show="showModal"
     :data="currentRow"
     :mode="modalMode"
@@ -81,8 +81,8 @@ import useTable from '@/hook/table'
 import { IMedicine } from '@/types/common'
 import { ElMessage } from 'element-plus'
 import { MEDICINE_STATUS } from '@/const'
-import { deleteMedicine, queryMedicinePage } from '@/server/api/medicine'
-import EditMedicineModal from '@/views/medicine/components/EditMedicineModal.vue'
+import { deleteMedicine, queryMedicinePage } from '@/server/api/stock'
+import EditStockModal from '@/views/stock/components/EditStockModal.vue'
 
 const isLoading = ref<boolean>(false)
 const modalMode = ref<'add' | 'edit'>('add')

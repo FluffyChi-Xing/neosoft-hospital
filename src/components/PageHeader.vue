@@ -1,5 +1,5 @@
 <template>
-  <el-card class="w-full h-fit">
+  <el-card shadow="never" class="w-full h-fit">
     <div class="w-full h-auto grid grid-cols-2 gap-4">
       <div class="w-full h-fit flex items-start gap-4">
         <el-button v-if="showBack" @click="onBack" type="text" style="padding: 0">

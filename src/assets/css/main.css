@@ -4,8 +4,13 @@
 
 .el-main {
   background: rgba(218, 218, 218, 0.57);
+  overflow-y: hidden;
 }
 
 .el-button {
   margin: 0;
+}
+
+#app {
+  overflow-x: hidden;
 }

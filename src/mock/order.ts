@@ -26,28 +26,28 @@ const getAppointmentPage = (config: IPage<never>) => {
 
 setupMock({
   setup: () => {
-    Mock.mock(new RegExp('/api/appointment/page'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/order/page'), 'post', (options) => {
       const config = JSON.parse(options.body)
       const resultList = getAppointmentPage(config)
       return successResponseWrap({ resultList })
     })
 
-    Mock.mock(new RegExp('/api/appointment/add'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/order/add'), 'post', (options) => {
       const data = JSON.parse(options.body)
       return successResponseWrap({ message: '新增预约成功', status: 200 })
     })
 
-    Mock.mock(new RegExp('/api/appointment/update'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/order/update'), 'post', (options) => {
       const data = JSON.parse(options.body)
       return successResponseWrap({ message: '更新预约成功', status: 200 })
     })
 
-    Mock.mock(new RegExp('/api/appointment/delete'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/order/delete'), 'post', (options) => {
       const data = JSON.parse(options.body)
       return successResponseWrap({ message: '删除预约成功', status: 200 })
     })
 
-    Mock.mock(new RegExp('/api/appointment/finish'), 'post', (options) => {
+    Mock.mock(new RegExp('/api/order/finish'), 'post', (options) => {
       const data = JSON.parse(options.body)
       return successResponseWrap({ message: '接诊成功', status: 200 })
     })
