@@ -1,6 +1,6 @@
 import $request from '../request'
 import { IPage } from '../../types'
-import { IEditMedicine, IStockUpdateReqDto } from '../../types/common'
+import { IEditMedicine, IStockAddReqDto, IStockUpdateReqDto } from '../../types/common'
 
 export const queryMedicinePage = (config: IPage<never>) =>
   $request({ url: '/api/stock/page', method: 'POST', data: config })
@@ -22,3 +22,6 @@ export const deleteStock = (skuId: string) =>
 
 export const updateStock = (data: IStockUpdateReqDto) =>
   $request({ url: '/stock/update', method: 'POST', data })
+
+export const addStockCount = (data: IStockAddReqDto) =>
+  $request({ url: '/stock/add', method: 'POST', data })

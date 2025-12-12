@@ -1,6 +1,6 @@
 import $request from '../request'
 import { IPage } from '../../types'
-import { IEditAppointment } from '../../types/common'
+import { IEditAppointment, IOrderCreateReqDto, IOrderStatusUpdateReqDto } from '../../types/common'
 
 // export const queryAppointmentPage = (config: IPage<never>) =>
 //   $request({ url: '/api/order/page', method: 'POST', data: config })
@@ -19,3 +19,18 @@ export const finishAppointment = (index: string) =>
 
 export const queryOrderPage = (params: IPage) =>
   $request({ url: '/order/page', method: 'POST', data: { ...params } })
+
+export const cancelOrder = (data: IOrderStatusUpdateReqDto) =>
+  $request({ url: '/order/cancel', method: 'POST', data })
+
+export const confirmOrder = (data: IOrderStatusUpdateReqDto) =>
+  $request({ url: '/order/confirm', method: 'POST', data })
+
+export const finishOrder = (data: IOrderStatusUpdateReqDto) =>
+  $request({ url: '/order/finish', method: 'POST', data })
+
+export const deleteOrder = (data: IOrderStatusUpdateReqDto) =>
+  $request({ url: '/order/delete', method: 'POST', data })
+
+export const createOrder = (data: IOrderCreateReqDto) =>
+  $request({ url: '/order/create', method: 'POST', data })

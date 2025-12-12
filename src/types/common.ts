@@ -122,3 +122,39 @@ export type IUserUpdateReqDto = {
   email: string;
   role: string;
 };
+
+export type IOrderUpdateReqDto = {
+  userId: number;
+  amount: number;
+  name: string[];
+  address: string;
+  skuId: string[];
+  price: number;
+  totalPrice: number;
+  status: string;
+  orderId: number;
+};
+
+export type IStockAddReqDto = {
+  stockId: number;
+  count: number;
+};
+
+
+export type IOrderStatusUpdateReqDto = {
+  orderId: number;
+  userId: string;
+};
+
+
+export type IOrderCreateReqDto = {
+  userId: string;
+  amount: number;
+  name: string[];
+  address: string;
+  skuId: string[];
+  price: number;
+  totalPrice: number;
+  status: string;
+  orderId?: string;
+};

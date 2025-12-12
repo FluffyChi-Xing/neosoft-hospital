@@ -2,7 +2,7 @@
   <div class="w-full h-full flex flex-col gap-4">
     <PageHeader content="订单管理">
       <template #action>
-        <el-button type="primary" @click="addAppointment">下单</el-button>
+        <el-button type="primary" @click="handleOrderAdd">下单</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
       </template>
     </PageHeader>
@@ -20,6 +20,7 @@
                 </el-tag>
               </template>
             </el-table-column>
+            <el-table-column label="user id" prop="userId" />
             <el-table-column prop="skuId" width="200" label="sku ids">
               <template #default="{ row }">
                 <el-tag v-for="(item, index) in row.skuId" :key="index" size="small">
@@ -46,16 +47,31 @@
                 {{ getYMD(row.updateAt) }}
               </template>
             </el-table-column>
-            <el-table-column width="250" label="操作" :fixed="'right'">
+            <el-table-column width="300" label="操作" fixed="right">
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
-                  <el-button type="warning" size="small" @click="handleAppointmentFinish(row?.id)"
-                    >接诊</el-button
+                  <el-button
+                    :disabled="canConfirm(row.status)"
+                    type="success"
+                    size="small"
+                    @click="handleOrderConfirm(row?.id)"
+                    >确认</el-button
                   >
-                  <el-button type="primary" size="small" @click="editAppointment(row)"
-                    >编辑</el-button
+                  <el-button
+                    :disabled="!canFinished(row.status)"
+                    type="warning"
+                    size="small"
+                    @click="handleOrderFinish(row?.id)"
+                    >完成</el-button
                   >
-                  <el-popconfirm title="确定删除该预约吗？" @confirm="handleDelete(row.id)">
+                  <el-button
+                    :disabled="!canCancel(row.status)"
+                    type="primary"
+                    size="small"
+                    @click="handleOrderCancel(row)"
+                    >取消</el-button
+                  >
+                  <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row.id)">
                     <template #reference>
                       <el-button type="danger" size="small">删除</el-button>
                     </template>
@@ -79,7 +95,7 @@
       </div>
     </div>
   </div>
-  <EditAppointmentModal
+  <EditOrderModal
     v-model:show="showModal"
     :data="currentRow"
     :mode="modalMode"
@@ -90,11 +106,19 @@
 <script setup lang="ts">
 import PageHeader from '@/components/PageHeader.vue'
 import { IOrderResDto } from '@/types/common'
-import EditAppointmentModal from '@/views/order/components/EditAppointmentModal.vue'
 import { IPage } from '@/types'
 import useLoading from '@/hook/loading'
-import { queryOrderPage } from '@/server/api/order'
+import {
+  cancelOrder,
+  confirmOrder,
+  finishOrder,
+  queryOrderPage,
+  deleteOrder,
+} from '@/server/api/order'
 import useDateFormat from '@/hook/date'
+import EditOrderModal from '@/views/order/components/EditOrderModal.vue'
+import useStorage from '@/hook/storage'
+import { Message } from '@/utils'
 
 const modalMode = ref<'add' | 'edit'>('add')
 const dataList = ref<IOrderResDto[]>([])
@@ -103,15 +127,27 @@ const orderStatus: Record<string, string> = {
   COMPLETED: '已完成',
   PAID: '已支付',
   CANCELLED: '已取消',
+  CONFIRMED: '已确认',
+  PENDING: '待确认',
 }
 const currentRow = ref<IOrderResDto | null>(null)
 const { loading, start, done } = useLoading(false)
 const { getYMD } = useDateFormat(undefined)
+const { get } = useStorage('local')
 const page = reactive<IPage>({
   current: 1,
   size: 10,
   total: 0,
 })
+const canConfirm = (index: string): boolean => {
+  return ['CONFIRMED', 'PAID', 'PENDING'].includes(index)
+}
+const canFinished = (index: string): boolean => {
+  return ['CONFIRMED', 'PAID', 'COMPLETED', 'PENDING'].includes(index)
+}
+const canCancel = (index: string): boolean => {
+  return ['CONFIRMED', 'PAID', 'PENDING'].includes(index)
+}
 
 const getData = async () => {
   start()
@@ -120,15 +156,98 @@ const getData = async () => {
   done()
   if (code === 200) {
     const { records, total, current, size } = data as unknown as IPageVo<IAppointment>
-    dataList.value = records
+    dataList.value = records.filter((item: IOrderResDto) => !item.isDelete) || []
     page.current = current
     page.size = size
     page.total = total
   }
 }
 
+const handleOrderAdd = () => {
+  showModal.value = true
+  modalMode.value = 'add'
+  currentRow.value = null
+}
+
 const refreshData = () => {
   getData()
+}
+
+const handleOrderCancel = async (row: IOrderResDto) => {
+  const userInfo = get('userInfo')
+  if (!userInfo) return
+  const { username } = userInfo
+  const params: IOrderStatusUpdateReqDto = {
+    orderId: row.id,
+    userId: username,
+  }
+  const res = await cancelOrder(params)
+  const { code, message, statusCode } = res
+  if (statusCode === 500) {
+    Message.error(message)
+  }
+  if (code === 200) {
+    refreshData()
+  } else {
+    Message.warning(message)
+  }
+}
+
+const handleOrderConfirm = async (orderId: string) => {
+  const userInfo = get('userInfo')
+  if (!userInfo) return
+  const { username } = userInfo
+  const params: IOrderStatusUpdateReqDto = {
+    orderId,
+    userId: username,
+  }
+  const res = await confirmOrder(params)
+  const { code, message, statusCode } = res
+  if (statusCode === 500) {
+    Message.error(message)
+  } else if (code === 200) {
+    refreshData()
+  } else {
+    Message.warning(message)
+  }
+}
+
+const handleOrderFinish = async (orderId: string) => {
+  const userInfo = get('userInfo')
+  if (!userInfo) return
+  const { username } = userInfo
+  const params: IOrderStatusUpdateReqDto = {
+    orderId,
+    userId: username,
+  }
+  const res = await finishOrder(params)
+  const { code, message, statusCode } = res
+  if (statusCode === 500) {
+    Message.error(message)
+  } else if (code === 200) {
+    refreshData()
+  } else {
+    Message.warning(message)
+  }
+}
+
+const handleOrderDelete = async (orderId: string) => {
+  const userInfo = get('userInfo')
+  if (!userInfo) return
+  const { username } = userInfo
+  const params: IOrderStatusUpdateReqDto = {
+    orderId,
+    userId: username,
+  }
+  const res = await deleteOrder(params)
+  const { code, message, statusCode } = res
+  if (statusCode === 500) {
+    Message.error(message)
+  } else if (code === 200) {
+    refreshData()
+  } else {
+    Message.warning(message)
+  }
 }
 
 const handlePageChange = (val: number) => {

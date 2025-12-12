@@ -16,3 +16,9 @@ export const getUserId = () => {
   const userInfo = get('userInfo')
   return userInfo?.id || ''
 }
+
+export const getUsername = () => {
+  const { get } = useStorage('local')
+  const userInfo = get('userInfo')
+  return userInfo?.username || ''
+}
