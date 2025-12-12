@@ -158,3 +158,12 @@ export type IOrderCreateReqDto = {
   status: string;
   orderId?: string;
 };
+
+export type INoticeResDto = {
+  id: number;
+  name: string;
+  status: string;
+  createAt: string;
+  updateAt: string;
+  isDelete: boolean;
+};

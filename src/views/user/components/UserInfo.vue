@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { IUser, IUserUpdateReqDto } from '@/types/common'
 import { DEFAULT_AVATAR, USER_ROLE } from '@/const'
-import { Message } from '@/utils'
+import { getUserId, Message } from '@/utils'
 import { updateUser } from '@/server/api/user'
 
 type userInfoProps = {
@@ -85,7 +85,7 @@ const emits = defineEmits(['update'])
 
 const handleSubmit = async () => {
   const params: IUserUpdateReqDto = {
-    id: form.id,
+    id: getUserId(),
     username: form.username,
     password: form.password,
     email: form.email,

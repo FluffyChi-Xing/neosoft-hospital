@@ -16,17 +16,17 @@ import useLoading from './loading'
  *
  * @returns {Object} { loading, response }
  */
-const useRequest = ramda.curry(function useRequest<T>(
+const useRequest = ramda.curry(function <T>(
   api: () => Promise<AxiosResponse<HttpResponse>>,
-  defaultValue = [] as unknown as T,
+  defaultValue = [] as unknown as T[],
   isLoading = true,
 ) {
   const { loading, start, done } = useLoading(isLoading);
-  const response = ref<T>(defaultValue);
+  const response = ref<T[]>(defaultValue);
   start();
   api()
     .then((res) => {
-      response.value = res.data as unknown as UnwrapRef<T>;
+      response.value = res.data as unknown as UnwrapRef<T[]>;
     })
     .finally(_ => {
       done();

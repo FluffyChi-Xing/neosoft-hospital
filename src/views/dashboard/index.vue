@@ -42,14 +42,14 @@
         <StockCountCharts />
       </div>
       <div class="w-full h-full flex flex-col">
-        <AlertCenter />
+        <AlertCenter :loading="loading" :notices="notices" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { IDashboard } from '@/types/common'
+import { IDashboard, INoticeResDto } from '@/types/common'
 import { computed, onMounted } from 'vue'
 import { queryDashboard } from '@/server/api/dashboard'
 import useUserStore from '@/store/user'
@@ -60,6 +60,8 @@ import useAppStore from '@/store/app'
 import OrderStatusCharts from '@/views/dashboard/components/OrderStatusCharts.vue'
 import StockCountCharts from '@/views/dashboard/components/StockCountCharts.vue'
 import AlertCenter from '@/views/dashboard/components/AlertCenter.vue'
+import useRequest from '@/hook/request'
+import { queryNoticeList } from '@/server/api/notice'
 
 const dataList = ref<IDashboard | null>(null)
 const isLoading = ref<boolean>(false)
@@ -98,6 +100,9 @@ const handleOnlineOrOffline = () => {
     message: isOnLine.value ? '已上线' : '已下线',
   })
 }
+
+const defaultNotices = Array.from({ length: 3 }).fill({});
+const { loading, response: notices } = useRequest<INoticeResDto>(queryNoticeList, defaultNotices)
 
 onMounted(() => {
   if (appStore.isDashboardEmpty) {
