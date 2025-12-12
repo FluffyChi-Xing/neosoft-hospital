@@ -14,7 +14,7 @@ const useCharts = (config: useChartsConfig) => {
 
   const init = () => {
     console.log('el', config);
-    if (el && isRef(el)) {
+    if (el !== undefined && isRef(el)) {
       const chartInstance = ECharts.init(el.value);
       chartInstance.setOption(options || {});
       return chartInstance;

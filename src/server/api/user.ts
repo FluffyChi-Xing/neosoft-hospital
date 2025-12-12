@@ -1,11 +1,11 @@
 import $request from '../request'
-import { IEditUser, IUserLogin } from '../../types/common'
+import { IUserLogin, IUserUpdateReqDto } from '../../types/common'
 
-export const queryUserDetail = (userId: string) =>
-  $request({ url: '/api/user/detail', method: 'POST', data: { userId } })
+export const getUserDetail = (userId: number) =>
+  $request({ url: `/user/getUserDetail?.userId=${userId}`, method: 'GET' })
 
-export const updateUser = (data: IEditUser) =>
-  $request({ url: '/api/user/update', method: 'POST', data })
+export const updateUser = (data: IUserUpdateReqDto) =>
+  $request({ url: '/user/updateUserInfo', method: 'POST', data })
 
 export const userLogin = (data: IUserLogin) =>
-  $request({ url: '/api/user/login', method: 'POST', data })
+  $request({ url: '/user/login', method: 'POST', data })

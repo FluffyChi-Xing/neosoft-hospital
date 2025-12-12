@@ -7,13 +7,20 @@ const useUserStore = defineStore('user', {
   }),
 
   getters: {
-    getUser: (state) => state.user,
+    getUserInfo: (state) => state.user,
+
+    getRole: (state) => state.user?.role ?? '',
 
     getToken: (state) => state.user?.token ?? '',
 
-    getPermissions: (state) => [state.user?.role ?? ''] ?? [],
-
-    getRole: (state) => state.user?.role ?? '',
+    getBaseInfo: (state) => {
+      return {
+        id: state.user?.id ?? '',
+        username: state.user?.username ?? '',
+        password: state.user?.password ?? '',
+        token: state.user?.token ?? '',
+      };
+    }
   },
 
   actions: {

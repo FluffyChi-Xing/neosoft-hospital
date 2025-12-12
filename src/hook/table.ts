@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import * as ramda from 'ramda'
 import { Message } from '../utils'
 import { IPage } from '../types'
 
@@ -7,12 +7,12 @@ export type ITableConfig<T extends Record<string, never>> = {
   searchData?: (params?: Record<string, never>) => Promise<T[]>
 }
 
-const useTable = (config: ITableConfig<never> = {}) => {
+const useTable = ramda.curry(function useTable(config: ITableConfig<never> = {}) {
   const { fetchData, searchData } = config
 
   const getData = async (params?: Record<string, never>) => {
-    const { status, data, message } = await fetchData(params)
-    if (status === 200) {
+    const { code, data, message } = await fetchData(params)
+    if (code === 200) {
       const { resultList } = data
       // console.log('getData', resultList)
       return resultList || []
@@ -27,8 +27,8 @@ const useTable = (config: ITableConfig<never> = {}) => {
       const queryBean = {
         property: val,
       }
-      const { status, data, message } = await searchData(queryBean)
-      if (status === 200) {
+      const { code, data, message } = await searchData(queryBean)
+      if (code === 200) {
         const { resultList } = data
         return resultList || []
       } else {
@@ -40,9 +40,9 @@ const useTable = (config: ITableConfig<never> = {}) => {
   }
 
   const getPageData = async (params: IPage) => {
-    const { index, size } = params
+    const { current, size } = params
     const queryBean = {
-      index,
+      current,
       size,
     }
     return await getData(queryBean)
@@ -55,11 +55,13 @@ const useTable = (config: ITableConfig<never> = {}) => {
 
   const filterPageData = async (params?: IPage<Record<string, never>>) => {
     if (!params) return
-    const { index, size, data } = params
-    const queryBean = {
-      index,
+    const { current, size, queryBean } = params
+    const query = {
+      current,
       size,
-      data,
+      queryBean: {
+        ...queryBean,
+      },
     }
     return await getPageData(queryBean)
   }
@@ -80,6 +82,6 @@ const useTable = (config: ITableConfig<never> = {}) => {
     filterPageData,
     onSearch,
   }
-}
+})
 
 export default useTable

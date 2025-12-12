@@ -2,58 +2,67 @@
   <div class="w-full h-full flex flex-col gap-4">
     <PageHeader content="库存管理">
       <template #action>
-        <el-button v-permission="'doctor'" type="primary" @click="addMedicine">新增药品</el-button>
+        <el-button type="primary" @click="addMedicine">新增库存</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
       </template>
     </PageHeader>
     <div class="w-full h-full flex flex-col gap-4">
       <div class="w-full h-full flex">
         <el-card shadow="never" class="w-full h-full">
-          <el-table v-loading="isLoading" :data="dataList" border stripe fit>
+          <el-table v-loading="loading" :data="dataList" border stripe fit>
             <el-table-column prop="id" label="ID" />
-            <el-table-column prop="name" label="药品名称">
+            <el-table-column prop="uuid" label="uuid" show-overflow-tooltip width="100" />
+            <el-table-column prop="name" label="库存名称" />
+            <el-table-column prop="count" label="库存数量" />
+            <el-table-column prop="reservedCount" label="预留数量" />
+            <el-table-column prop="skuId" label="SKU ID">
               <template #default="{ row }">
-                <span>{{ row.name }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="price" label="价格">
-              <template #default="{ row }">
-                <div class="w-full h-auto flex items-center gap-4">
-                  <span>{{ row.price }}</span>
-                  <el-tag type="danger">{{ row.unit }}</el-tag>
+                <div class="w-full h-auto flex items-center gap-2">
+                  <el-tag
+                    v-for="(item, index) in skuIdFormatter(row.skuId)"
+                    :key="index"
+                    size="small"
+                  >
+                    {{ item }}
+                  </el-tag>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="stock" label="库存" />
-            <el-table-column prop="status" label="状态">
+            <el-table-column label="类型" prop="type">
               <template #default="{ row }">
-                <el-tag>{{
-                  MEDICINE_STATUS.find((item) => item.value === row.status)?.key ?? '未知'
-                }}</el-tag>
+                <el-tag size="small">{{ row.type }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="createAt" label="创建时间" />
-            <el-table-column prop="updateAt" label="更新时间" />
-            <el-table-column label="操作" :fixed="'right'">
+            <el-table-column label="备注" prop="remark" />
+            <el-table-column prop="status" label="状态">
+              <template #default="{ row }">
+                <el-tag>{{ stockStatus[row.status] ?? '未知' }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createAt" label="创建时间">
+              <template #default="{ row }">
+                {{ getYMD(row.createAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="updateAt" label="更新时间">
+              <template #default="{ row }">
+                {{ getYMD(row.updateAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="180" :fixed="'right'">
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
-                  <el-button
-                    v-permission="'doctor'"
-                    type="primary"
-                    size="small"
-                    @click="editMedicine(row)"
-                    >编辑</el-button
-                  >
-                  <el-popconfirm title="确定删除该药品吗？" @confirm="handleDelete(row?.id)">
+                  <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+                  <el-popconfirm title="确定删除该库存吗？" @confirm="handleDelete(row?.id)">
                     <template #reference>
-                      <el-button v-permission="'doctor'" type="danger" size="small">删除</el-button>
+                      <el-button type="danger" size="small">删除</el-button>
                     </template>
                   </el-popconfirm>
                 </div>
               </template>
             </el-table-column>
             <template #empty>
-              <el-empty description="暂无药品" />
+              <el-empty description="暂无库存" />
             </template>
           </el-table>
         </el-card>
@@ -62,6 +71,7 @@
         <el-pagination
           layout="prev, pager, next"
           :total="page.total"
+          :current-page="page.current"
           @current-change="handlePageChange"
         />
       </div>
@@ -77,74 +87,74 @@
 
 <script setup lang="ts">
 import PageHeader from '@/components/PageHeader.vue'
-import useTable from '@/hook/table'
-import { IMedicine } from '@/types/common'
-import { ElMessage } from 'element-plus'
-import { MEDICINE_STATUS } from '@/const'
-import { deleteMedicine, queryMedicinePage } from '@/server/api/stock'
+import { IStockResDto } from '@/types/common'
 import EditStockModal from '@/views/stock/components/EditStockModal.vue'
+import { IPage, IPageVo } from '@/types'
+import useLoading from '@/hook/loading'
+import { deleteStock, queryStockPage } from '@/server/api/stock'
+import useDateFormat from '@/hook/date'
 
-const isLoading = ref<boolean>(false)
 const modalMode = ref<'add' | 'edit'>('add')
-const dataList = ref<IMedicine[]>([])
+const dataList = ref<IStockResDto[]>([])
 const showModal = ref<boolean>(false)
-const currentRow = ref<IMedicine | null>(null)
-const page = reactive({
-  index: 1,
+const currentRow = ref<IStockResDto | null>(null)
+const { loading, start, done } = useLoading(false)
+const { getYMD } = useDateFormat(undefined)
+const page = reactive<IPage>({
+  current: 1,
   size: 10,
-  total: 0,
+  queryBean: {},
 })
-const { getPageData } = useTable<{ index: number; size: number }, IMedicine>({
-  fetchData: queryMedicinePage,
-})
-
-const initData = async () => {
-  isLoading.value = true
-  const data = await getPageData({ index: page.index, size: page.size })
-  const { records, total, index, size } = data
-  dataList.value = records
-  page.index = index
-  page.size = size
-  page.total = total
-  isLoading.value = false
+const stockStatus: Record<string, string> = {
+  available: '可售',
+  unavailable: '停售',
+  out_of_stock: '缺货',
 }
-const refreshData = async () => {
-  isLoading.value = true
-  const data = await getPageData({ index: page.index, size: page.size })
-  const { records, total, index, size } = data
-  dataList.value = records
-  page.index = index
-  page.size = size
-  page.total = total
-  isLoading.value = false
+const skuIdFormatter = (index: string): string[] => {
+  const result: string[] = []
+  if (index.includes(',')) {
+    const arr = index.split(',')
+    arr.forEach((item) => {
+      result.push(item.trim())
+    })
+  } else {
+    result.push(index.trim())
+  }
+  return result
 }
 
-const addMedicine = () => {
-  showModal.value = true
-  modalMode.value = 'add'
-  currentRow.value = null
+const handleDelete = async (skuId: string) => {
+  const res = await deleteStock(skuId);
+  const { code, message } = res;
+  if (code !== 200) {
+    Message.error('删除失败', message);
+    return;
+  }
+  refreshData();
 }
 
-const editMedicine = (row: IMedicine) => {
-  showModal.value = true
-  modalMode.value = 'edit'
-  currentRow.value = row
+const handleEdit = (row: IStockResDto) => {}
+
+const getStockPage = async () => {
+  start()
+  const res = await queryStockPage({ ...page })
+  done()
+  const { code, data } = res
+  if (code === 200) {
+    const { records, total, current, size } = data as unknown as IPageVo<IStockResDto>
+    dataList.value = records
+    page.current = current
+    page.size = size
+    page.total = total
+  }
 }
 
-const handleDelete = async (index: string) => {
-  const res: never = await deleteMedicine(index)
-  const { message } = res
-  ElMessage.success(message)
-  await refreshData()
-}
-
-const handlePageChange = async (index: number) => {
-  page.index = index
-  await refreshData()
+const refreshData = () => {
+  getStockPage()
 }
 
 onMounted(() => {
-  initData()
+  getStockPage()
 })
 </script>
 

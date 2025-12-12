@@ -1,15 +1,18 @@
 import { ElMessage, ElNotification } from 'element-plus'
+import useStorage from '../hook/storage'
 
 export const Message = ElMessage
 
 export const Notice = ElNotification
 
 export const isLogin = () => {
-  const res = localStorage.getItem('userInfo')
-  return !!res
+  const { get } = useStorage('local')
+  const userInfo = get('userInfo')
+  return !!userInfo
 }
 
 export const getUserId = () => {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-  return userInfo.id || ''
+  const { get } = useStorage('local')
+  const userInfo = get('userInfo')
+  return userInfo?.id || ''
 }

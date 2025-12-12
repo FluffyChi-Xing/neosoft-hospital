@@ -2,9 +2,9 @@
   <el-card shadow="never" class="w-full h-fit">
     <div class="w-full h-auto grid grid-cols-2 gap-4">
       <div class="w-full h-fit flex items-start gap-4">
-        <el-button v-if="showBack" @click="onBack" type="text" style="padding: 0">
-          <el-icon><ArrowLeft /></el-icon>
-        </el-button>
+        <!--        <el-button v-if="showBack" @click="onBack" type="text" style="padding: 0">-->
+        <!--          <el-icon><ArrowLeft /></el-icon>-->
+        <!--        </el-button>-->
         <div class="flex items-center">{{ pageHeaderContent }}</div>
       </div>
       <div class="w-full h-auto flex justify-end items-center gap-4">
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft } from '@element-plus/icons-vue'
+// import { ArrowLeft } from '@element-plus/icons-vue'
 
 type pageHeaderProps = {
   content: string

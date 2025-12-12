@@ -53,6 +53,6 @@ export const APPOINTMENT_STATUS: IKVType[] = [
 
 // doctor - 医生 patient - 患者
 export const USER_ROLE: IKVType[] = [
-  { key: '医生', value: 'doctor' },
-  { key: '患者', value: 'patient' },
+  { key: '普通用户', value: 'user' },
+  { key: '管理员', value: 'admin' },
 ]

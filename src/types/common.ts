@@ -1,16 +1,16 @@
 export type IUser = {
-  id: string
-  name: string
-  gender: number
-  disease: string[]
-  password: string
-  age: number
-  role: string
-  createAt: string
-  updateAt: string
+  id: number;
+  username: string;
+  password: string;
+  email: string;
+  role: string;
+  status: string;
+  isDelete: boolean;
+  createAt: string;
+  updateAt: string;
 }
 
-export type IEditUser = Omit<IUser, 'createAt' | 'updateAt' | 'disease'>
+export type IEditUser = Omit<IUser, 'createAt' | 'updateAt'>
 
 export type IPatient = Omit<IUser, 'role' | 'password'>
 
@@ -69,3 +69,56 @@ export type IRegistration = {
 
 
 export type IEditRegistration = Omit<IRegistration, 'createAt' | 'updateAt'>
+
+
+export type IStockResDto = {
+  id: number;
+  uuid: string;
+  skuId: string;
+  count: number;
+  reserveCount: number;
+  name: string;
+  type: string;
+  status: string;
+  remark: string;
+  createAt: string;
+  updateAt: string;
+  isDelete: boolean;
+};
+
+
+export type IOrderResDto = {
+  id: number;
+  uuid: string;
+  userId: string;
+  amount: number;
+  name: string[];
+  address: string;
+  skuId: string[];
+  price: number;
+  totalPrice: number;
+  status: string;
+  isDelete: boolean;
+  createAt: string;
+  updateAt: string;
+};
+
+
+export type IStockUpdateReqDto = {
+  id: number;
+  count: number;
+  name?: string;
+  type?: string;
+  status?: string;
+  remark?: string;
+  reservedCount?: number;
+};
+
+
+export type IUserUpdateReqDto = {
+  id: number;
+  username: string;
+  password: string;
+  email: string;
+  role: string;
+};

@@ -26,13 +26,7 @@ type orderChartsProp = {
   data: { value: number; name: string }[]
 }
 const props = withDefaults(defineProps<Partial<orderChartsProp>>(), {
-  data: () => [
-    { value: 1048, name: '已完成' },
-    { value: 735, name: '待处理' },
-    { value: 580, name: '已取消' },
-    { value: 484, name: '已过期' },
-    { value: 300, name: '已退款' },
-  ],
+  data: () => [],
 })
 const chartsRef = ref()
 const dateDuration = ref<string[]>([])

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-[150px] flex">
+  <div class="display-card">
     <el-card :shadow="shadow" class="w-full">
       <div class="w-full h-full grid grid-cols-2 items-center gap-4">
         <div class="w-full h-full flex flex-col justify-center">
@@ -48,5 +48,24 @@ const { data, shadow, title, suffix, icon } = toRefs(props)
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.display-card {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  cursor: pointer;
+
+  .object-contain {
+    transition: .5s all ease;
+  }
+
+  &:hover {
+
+
+    .object-contain {
+      transform: scale(1.3);
+    }
+  }
 }
 </style>

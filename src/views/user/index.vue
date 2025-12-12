@@ -27,18 +27,20 @@ import PageHeader from '@/components/PageHeader.vue'
 import useUserStore from '@/store/user'
 import { userStoreType } from '@/store/user/types'
 import UserInfo from '@/views/user/components/UserInfo.vue'
-import { queryUserDetail } from '@/server/api/user'
+import useStorage from '@/hook/storage'
+import { getUserDetail } from '@/server/api/user'
 
 const userStore = useUserStore()
 const user = ref<userStoreType | null>()
 const activeIndex = ref<string>('view')
+const { get } = useStorage('local')
 
-const getUserDetail = async () => {
-  const userInfo = localStorage.getItem('userInfo')
+const getUserInfo= async () => {
+  const userInfo = get('userInfo')
   const { id } = userInfo
-  const res: never = await queryUserDetail(id ?? '')
-  const { status, data } = res
-  if (status === 200 && data) {
+  const res = await getUserDetail(id ?? 0)
+  const { code, data } = res
+  if (code === 200 && data) {
     user.value = data
     userStore.updateUser(data)
   } else {
@@ -52,13 +54,13 @@ const initData = async () => {
   if (data) {
     user.value = data
   } else {
-    await getUserDetail()
+    await getUserInfo()
   }
 }
 
 const handleUpdateDetail = async () => {
   activeIndex.value = 'view'
-  await getUserDetail()
+  await getUserInfo()
 }
 
 onMounted(() => {

@@ -7,23 +7,7 @@
           <el-avatar size="large" shape="circle" :src="DEFAULT_AVATAR" />
         </el-form-item>
         <el-form-item label="姓名" :required="requiredFields">
-          <el-input v-model="form.name" placeholder="请输入姓名" :disabled="isEditable" />
-        </el-form-item>
-        <el-form-item label="性别" :required="requiredFields">
-          <el-radio-group v-model="form.gender" :disabled="isEditable">
-            <el-radio-button :value="0">男</el-radio-button>
-            <el-radio-button :value="1">女</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="年龄" :required="requiredFields">
-          <el-input-number
-            v-model="form.age"
-            type="number"
-            :min="20"
-            :max="80"
-            placeholder="请输入年龄"
-            :disabled="isEditable"
-          />
+          <el-input v-model="form.username" placeholder="请输入姓名" :disabled="isEditable" />
         </el-form-item>
         <el-form-item label="密码" :required="requiredFields">
           <el-input
@@ -33,6 +17,9 @@
             placeholder="请输入密码"
             :disabled="isEditable"
           />
+        </el-form-item>
+        <el-form-item label="邮箱" :required="requiredFields">
+          <el-input v-model="form.email" placeholder="请输入邮箱" :disabled="isEditable" />
         </el-form-item>
         <el-form-item label="角色" :required="requiredFields">
           <el-select v-model="form.role" placeholder="请选择角色" :disabled="isEditable">
@@ -53,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { IEditUser, IUser } from '@/types/common'
+import { IUser, IUserUpdateReqDto } from '@/types/common'
 import { DEFAULT_AVATAR, USER_ROLE } from '@/const'
 import { Message } from '@/utils'
 import { updateUser } from '@/server/api/user'
@@ -73,22 +60,16 @@ const { mode, data } = toRefs(props)
 const formRef = ref()
 const form = reactive<IUser>({
   id: data.value?.id ?? '',
-  name: data.value?.name ?? '',
-  gender: data.value?.gender ?? 0,
-  disease: data.value?.disease ?? [],
-  age: data.value?.age ?? 0,
+  username: data.value?.username ?? '',
+  email: data.value?.email ?? '',
   password: data.value?.password ?? '',
   role: data.value?.role ?? '',
-  createAt: data.value?.createAt ?? '',
-  updateAt: data.value?.updateAt ?? '',
 })
 
 const initData = () => {
-  form.name = data.value?.name ?? ''
-  form.age = data.value?.age ?? 0
-  form.gender = data.value?.gender ?? 0
-  form.disease = data.value?.disease ?? []
+  form.username = data.value?.username ?? ''
   form.password = data.value?.password ?? ''
+  form.email = data.value?.email ?? ''
   form.role = data.value?.role ?? ''
 }
 
@@ -103,17 +84,16 @@ const isEditable = computed(() => {
 const emits = defineEmits(['update'])
 
 const handleSubmit = async () => {
-  const params: IEditUser = {
-    age: form.age,
-    gender: form.gender,
+  const params: IUserUpdateReqDto = {
     id: form.id,
-    name: form.name,
+    username: form.username,
     password: form.password,
+    email: form.email,
     role: form.role,
   }
   const res = await updateUser(params)
-  const { status } = res
-  if (status === 200) {
+  const { code } = res
+  if (code === 200) {
     Message.success('更新用户信息成功')
     emits('update')
   } else {

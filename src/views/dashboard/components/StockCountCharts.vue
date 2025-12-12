@@ -27,40 +27,8 @@ type orderChartsProp = {
   series: { data: number[]; name: string; type: string; stack?: string }[]
 }
 const props = withDefaults(defineProps<Partial<orderChartsProp>>(), {
-  series: () => [
-    {
-      name: '苜蓿炒肉',
-      type: 'line',
-      stack: 'Total',
-      data: [120, 132, 101, 134, 90, 230, 210],
-    },
-    {
-      name: '宫保鸡丁',
-      type: 'line',
-      stack: 'Total',
-      data: [220, 182, 191, 234, 290, 330, 310],
-    },
-    {
-      name: '干炒牛河',
-      type: 'line',
-      stack: 'Total',
-      data: [150, 232, 201, 154, 190, 330, 410],
-    },
-    {
-      name: '葱爆肉',
-      type: 'line',
-      stack: 'Total',
-      data: [320, 332, 301, 334, 390, 330, 320],
-    },
-    {
-      name: '水煮肉片',
-      type: 'line',
-      stack: 'Total',
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
-    },
-  ],
-  legendData: ['苜蓿炒肉', '宫保鸡丁', '干炒牛河', '葱爆肉', '水煮肉片'],
-
+  series: () => [],
+  legendData: () => [],
 })
 const chartsRef = ref()
 const dateDuration = ref<string[]>([])
@@ -96,13 +64,15 @@ const option = {
 }
 
 const { init } = useCharts({ el: chartsRef, options: option })
+const showChart = computed(() => series.value.length > 0 && legendData.value.length > 0)
+
 
 const refreshChart = () => {
   return {
     duration: dateDuration.value,
     done: () => init(), // 惰性函数 不会直接执行 因为可能需要通过使用 duration 获取新的数据后再执行
   }
-};
+}
 
 onMounted(() => {
   init()
@@ -110,7 +80,7 @@ onMounted(() => {
 
 defineExpose({
   refreshChart,
-});
+})
 </script>
 
 <style scoped></style>

@@ -3,6 +3,6 @@ import permission from './modules/permission'
 
 export default {
   install(app: App) {
-    app.directive('permission', permission)
+    // app.directive('permission', permission)
   },
 }

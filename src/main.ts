@@ -9,7 +9,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { createPinia } from 'pinia'
 
 // 引入mock数据
-import './mock'
+// import './mock'
 
 const app = createApp(App)
 const pinia = createPinia()
