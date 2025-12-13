@@ -104,21 +104,21 @@
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue'
-import { IOrderResDto } from '@/types/common'
-import { IPage } from '@/types'
+import type { IOrderResDto, IOrderStatusUpdateReqDto } from '@/types/common'
 import useLoading from '@/hook/loading'
+import useDateFormat from '@/hook/date'
+import useStorage from '@/hook/storage'
+import type { IPage, IPageVo } from '@/types'
 import {
   cancelOrder,
   confirmOrder,
   finishOrder,
   queryOrderPage,
   deleteOrder,
-} from '@/server/api/order'
-import useDateFormat from '@/hook/date'
-import EditOrderModal from '@/views/order/components/EditOrderModal.vue'
-import useStorage from '@/hook/storage'
+} from '@/server/api/order.ts'
 import { Message } from '@/utils'
+import EditOrderModal from './components/EditOrderModal.vue'
+import PageHeader from '../../components/PageHeader.vue'
 
 const modalMode = ref<'add' | 'edit'>('add')
 const dataList = ref<IOrderResDto[]>([])
@@ -155,7 +155,7 @@ const getData = async () => {
   const { code, data } = res
   done()
   if (code === 200) {
-    const { records, total, current, size } = data as unknown as IPageVo<IAppointment>
+    const { records, total, current, size } = data as unknown as IPageVo<IOrderResDto>
     dataList.value = records.filter((item: IOrderResDto) => !item.isDelete) || []
     page.current = current
     page.size = size

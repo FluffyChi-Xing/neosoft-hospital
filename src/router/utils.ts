@@ -1,4 +1,4 @@
-import { Router, RouteRecordNormalized } from 'vue-router'
+import type { Router, RouteRecordNormalized } from 'vue-router'
 import NProgress from 'nprogress'
 import { isLogin } from '../utils'
 

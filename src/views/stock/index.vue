@@ -2,7 +2,7 @@
   <div class="w-full h-full flex flex-col gap-4">
     <PageHeader content="库存管理">
       <template #action>
-        <el-button type="primary" @click="addMedicine">新增库存</el-button>
+        <el-button type="primary" @click="addStock">新增库存</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
       </template>
     </PageHeader>
@@ -86,13 +86,12 @@
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue'
-import { IStockResDto } from '@/types/common'
-import EditStockModal from '@/views/stock/components/EditStockModal.vue'
-import { IPage, IPageVo } from '@/types'
-import useLoading from '@/hook/loading'
-import { deleteStock, queryStockPage } from '@/server/api/stock'
-import useDateFormat from '@/hook/date'
+import type { IStockResDto } from '@/types/common.ts'
+import useLoading from '../../hook/loading'
+import useDateFormat from '../../hook/date'
+import type { IPage, IPageVo } from '@/types'
+import { deleteStock, queryStockPage } from '@/server/api/stock.ts'
+import EditStockModal from './components/EditStockModal.vue'
 
 const modalMode = ref<'add' | 'edit'>('add')
 const dataList = ref<IStockResDto[]>([])
@@ -124,20 +123,30 @@ const skuIdFormatter = (index: string): string[] => {
 }
 
 const handleDelete = async (skuId: string) => {
-  const res = await deleteStock(skuId);
-  const { code, message } = res;
+  const res: never = await deleteStock(skuId)
+  const { code, message } = res
   if (code !== 200) {
-    Message.error('删除失败', message);
-    return;
+    Message.error('删除失败', message)
+    return
   }
-  refreshData();
+  refreshData()
 }
 
-const handleEdit = (row: IStockResDto) => {}
+const addStock = () => {
+  showModal.value = true
+  modalMode.value = 'add'
+  currentRow.value = null
+}
+
+const handleEdit = (row: IStockResDto) => {
+  showModal.value = true
+  modalMode.value = 'edit'
+  currentRow.value = row
+}
 
 const getStockPage = async () => {
   start()
-  const res = await queryStockPage({ ...page })
+  const res: never = await queryStockPage({ ...page })
   done()
   const { code, data } = res
   if (code === 200) {

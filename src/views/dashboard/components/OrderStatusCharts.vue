@@ -64,16 +64,15 @@ const refreshChart = () => {
     duration: dateDuration.value,
     done: () => init(), // 惰性函数 不会直接执行 因为可能需要通过使用 duration 获取新的数据后再执行
   }
-};
+}
 
 onMounted(() => {
   init()
 })
 
-
 defineExpose({
   refreshChart,
-});
+})
 </script>
 
 <style scoped></style>

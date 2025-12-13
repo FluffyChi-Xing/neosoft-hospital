@@ -9,10 +9,9 @@ export type IKVType = {
   value: string
 }
 
-
 export type IPageVo<T> = {
-  current: number;
-  size: number;
-  total: number;
-  records: T[];
-};
+  current: number
+  size: number
+  total: number
+  records: T[]
+}

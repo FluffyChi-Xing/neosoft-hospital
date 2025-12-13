@@ -1,6 +1,11 @@
 import $request from '../request'
-import { IPage } from '../../types'
-import { IEditAppointment, IOrderCreateReqDto, IOrderStatusUpdateReqDto } from '../../types/common'
+import type { IPage } from '@/types'
+import type {
+  IEditAppointment,
+  IOrderCreateReqDto,
+  IOrderStatusUpdateReqDto,
+  IOrderUpdateReqDto,
+} from '@/types/common.ts'
 
 // export const queryAppointmentPage = (config: IPage<never>) =>
 //   $request({ url: '/api/order/page', method: 'POST', data: config })
@@ -34,3 +39,8 @@ export const deleteOrder = (data: IOrderStatusUpdateReqDto) =>
 
 export const createOrder = (data: IOrderCreateReqDto) =>
   $request({ url: '/order/create', method: 'POST', data })
+
+export const getOrderStatistic = () => $request({ url: '/order/dashboard', method: 'GET' })
+
+export const updateOrder = (data: IOrderUpdateReqDto) =>
+  $request({ url: '/order/update', method: 'POST', data })

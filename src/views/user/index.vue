@@ -2,7 +2,7 @@
   <div class="w-full h-full flex flex-col gap-4">
     <PageHeader content="用户信息">
       <template #action>
-        <el-button type="warning" @click="getUserDetail">刷新</el-button>
+        <el-button type="warning" @click="getUserInfo">刷新</el-button>
       </template>
     </PageHeader>
     <div class="w-full h-auto flex-1 flex flex-col">
@@ -23,22 +23,22 @@
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue'
-import useUserStore from '@/store/user'
-import { userStoreType } from '@/store/user/types'
-import UserInfo from '@/views/user/components/UserInfo.vue'
-import useStorage from '@/hook/storage'
-import { getUserDetail } from '@/server/api/user'
+import { getUserDetail } from '@/server/api/user.ts'
+import PageHeader from '../../components/PageHeader.vue'
+import UserInfo from './components/UserInfo.vue'
+import useStorage from '../../hook/storage'
+import type { userStoreType } from '@/store/user/types.ts'
+import useUserStore from '../../store/user'
 
 const userStore = useUserStore()
 const user = ref<userStoreType | null>()
 const activeIndex = ref<string>('view')
 const { get } = useStorage('local')
 
-const getUserInfo= async () => {
+const getUserInfo = async () => {
   const userInfo = get('userInfo')
   const { id } = userInfo
-  const res = await getUserDetail(id ?? 0)
+  const res: never = await getUserDetail(id ?? 0)
   const { code, data } = res
   if (code === 200 && data) {
     user.value = data
@@ -50,7 +50,7 @@ const getUserInfo= async () => {
 }
 
 const initData = async () => {
-  const data = userStore.getUser
+  const data = userStore.getUserInfo
   if (data) {
     user.value = data
   } else {

@@ -1,26 +1,11 @@
 <template>
   <el-dialog v-model="visible" draggable :title="title" :close-on-click-modal="false" width="500px">
     <template #default>
-      <el-form :model="form">
-        <el-form-item label="数量" required>
-          <el-input-number v-model="form.amount" :min="1" placeholder="请输入数量" />
-        </el-form-item>
-        <el-form-item label="商品名称">
-          <el-input-tag v-model="form.name" max="4" placeholder="请输入商品名称" />
-        </el-form-item>
+      <el-form :model="form" label-width="100px">
         <el-form-item label="收货地址" required>
           <el-input v-model="form.address" placeholder="请输入收货地址" />
         </el-form-item>
-        <el-form-item label="商品ID">
-          <el-input-tag v-model="form.skuId" max="4" placeholder="请输入商品ID" />
-        </el-form-item>
-        <el-form-item label="单价" required>
-          <el-input-number v-model="form.price" :min="1" placeholder="请输入单价" />
-        </el-form-item>
-        <el-form-item label="总价" required>
-          <el-input-number v-model="form.totalPrice" :min="1" placeholder="请输入总价" />
-        </el-form-item>
-        <el-form-item label="状态" required>
+        <el-form-item label="订单状态" required>
           <el-radio-group v-model="form.status">
             <el-radio-button
               v-for="(item, index) in statusOptions"
@@ -29,6 +14,35 @@
               >{{ item.value }}</el-radio-button
             >
           </el-radio-group>
+        </el-form-item>
+        <el-divider content-position="left">商品信息</el-divider>
+        <el-scrollbar height="400px">
+          <div v-for="(item, index) in form.items" :key="index" class="item-group">
+            <div class="item-header">
+              <span>商品 {{ index + 1 }}</span>
+              <el-button
+                type="danger"
+                size="small"
+                link
+                @click="removeItem(index)"
+                v-if="form.items.length > 1"
+              >
+                删除
+              </el-button>
+            </div>
+            <el-form-item label="商品名称" required>
+              <el-input v-model="item.name" placeholder="请输入商品名称" />
+            </el-form-item>
+            <el-form-item label="商品ID" required>
+              <el-input v-model="item.skuId" placeholder="请输入商品ID" />
+            </el-form-item>
+            <el-form-item label="数量" required>
+              <el-input-number v-model="item.quantity" :min="1" placeholder="请输入数量" />
+            </el-form-item>
+          </div>
+        </el-scrollbar>
+        <el-form-item>
+          <el-button type="primary" plain @click="addItem">添加商品</el-button>
         </el-form-item>
       </el-form>
     </template>
@@ -42,10 +56,10 @@
 </template>
 
 <script setup lang="ts">
-import { IEditAppointment, IOrderCreateReqDto } from '@/types/common'
-import { getUsername, Message } from '@/utils'
-import { addAppointment, createOrder, updateAppointment } from '@/server/api/order'
-import { IKVType } from '@/types'
+import { IOrderCreateReqDto } from '../../../types/common'
+import { getUserId, Message } from '../../../utils'
+import { IKVType } from '../../../types'
+import { createOrder, updateOrder } from '../../../server/api/order'
 
 type addProp = {
   show: boolean
@@ -59,17 +73,12 @@ const props = withDefaults(defineProps<addProp>(), {
   data: null,
 })
 
-const { show, mode, data } = toRefs(props)
+const { show, mode } = toRefs(props)
 
 const form = reactive<IOrderCreateReqDto>({
-  id: '',
-  userId: getUsername(),
-  amount: 0,
-  name: [],
+  userId: '',
   address: '',
-  skuId: [],
-  price: 0,
-  totalPrice: 0,
+  items: [],
   status: 'PENDING',
 })
 
@@ -93,26 +102,29 @@ const statusOptions: IKVType[] = [
 ]
 
 const initData = () => {
-  if (mode.value === 'edit') {
-    form.id = data.value?.id ?? ''
-    form.userId = getUsername()
-    form.amount = data.value?.amount ?? 0
-    form.name = data.value?.name ?? []
-    form.address = data.value?.address ?? ''
-    form.skuId = data.value?.skuId ?? []
-    form.price = data.value?.price ?? 0
-    form.totalPrice = data.value?.totalPrice ?? 0
-    form.status = data.value?.status ?? 'PENDING'
+  if (mode.value === 'edit' && props.data) {
+    form.userId = props.data.userId
+    form.address = props.data.address
+    form.items =
+      props.data.items.length > 0 ? [...props.data.items] : [{ skuId: '', name: '', quantity: 1 }]
+    form.status = props.data.status || 'PENDING'
+    form.orderId = props.data.orderId
   } else {
-    form.id = ''
-    form.userId = getUsername()
-    form.amount = 0
-    form.name = []
+    form.userId = Number(getUserId()) ?? 0
     form.address = ''
-    form.skuId = []
-    form.price = 0
-    form.totalPrice = 0
+    form.items = [{ skuId: '', name: '', quantity: 1 }]
     form.status = 'PENDING'
+    form.orderId = undefined
+  }
+}
+
+const addItem = () => {
+  form.items.push({ skuId: '', name: '', quantity: 1 })
+}
+
+const removeItem = (index: number) => {
+  if (form.items.length > 1) {
+    form.items.splice(index, 1)
   }
 }
 
@@ -129,7 +141,7 @@ const handleConfirm = async () => {
       Message.warning('创建失败')
     }
   } else {
-    const res: never = await updateAppointment(params)
+    const res: never = await updateOrder(params)
     const { code } = res
     if (code === 200) {
       Message.success('更新成功')
@@ -146,4 +158,20 @@ watchEffect(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.item-group {
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #303133;
+}
+</style>

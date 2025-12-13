@@ -1,33 +1,33 @@
 <template>
   <el-dialog v-model="visible" draggable :title="title" :close-on-click-modal="false" width="500px">
     <template #default>
-      <el-form :model="form">
-        <el-form-item label="药品名称" required>
-          <el-input v-model="form.name" placeholder="请输入药品名称" />
-        </el-form-item>
-        <el-form-item label="规格" required>
-          <el-input v-model="form.specification" placeholder="请输入药品规格" />
-        </el-form-item>
-        <el-form-item label="单位" required>
-          <el-input v-model="form.unit" placeholder="请输入药品单位" />
-        </el-form-item>
-        <el-form-item label="价格" required>
-          <el-input-number v-model="form.price" :min="0" placeholder="请输入药品价格" />
-        </el-form-item>
-        <el-form-item label="库存" required>
-          <el-input-number v-model="form.stock" :min="0" placeholder="请输入药品库存" />
-        </el-form-item>
-        <el-form-item label="状态" required>
-          <el-radio-group v-model="form.status">
-            <el-radio-button
-              v-for="(item, index) in MEDICINE_STATUS"
-              :key="index"
-              :value="item.value"
-              >{{ item.key }}</el-radio-button
-            >
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
+<!--      <el-form :model="form">-->
+<!--        <el-form-item label="药品名称" required>-->
+<!--          <el-input v-model="form.name" placeholder="请输入药品名称" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="规格" required>-->
+<!--          <el-input v-model="form.specification" placeholder="请输入药品规格" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="单位" required>-->
+<!--          <el-input v-model="form.unit" placeholder="请输入药品单位" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="价格" required>-->
+<!--          <el-input-number v-model="form.price" :min="0" placeholder="请输入药品价格" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="库存" required>-->
+<!--          <el-input-number v-model="form.stock" :min="0" placeholder="请输入药品库存" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="状态" required>-->
+<!--          <el-radio-group v-model="form.status">-->
+<!--            <el-radio-button-->
+<!--              v-for="(item, index) in MEDICINE_STATUS"-->
+<!--              :key="index"-->
+<!--              :value="item.value"-->
+<!--              >{{ item.key }}</el-radio-button-->
+<!--            >-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
     </template>
     <template #footer>
       <div class="w-full h-auto flex items-center justify-end gap-4">
@@ -39,15 +39,14 @@
 </template>
 
 <script setup lang="ts">
-import { MEDICINE_STATUS } from '@/const'
-import { IEditMedicine, IMedicine } from '@/types/common'
+import type { InsertStockReqDto, IStockResDto, IStockUpdateReqDto } from '@/types/common.ts'
+import { createStock, updateStock } from '@/server/api/stock.ts'
 import { Message } from '@/utils'
-import { addMedicine, updateMedicine } from '@/server/api/stock'
 
 type addProp = {
   show: boolean
   mode: 'add' | 'edit'
-  data: IMedicine | null
+  data: IStockResDto | null
 }
 
 const props = withDefaults(defineProps<addProp>(), {
@@ -58,14 +57,19 @@ const props = withDefaults(defineProps<addProp>(), {
 
 const { show, mode, data } = toRefs(props)
 
-const form = reactive<IEditMedicine>({
+const form = reactive<IStockResDto>({
   id: '',
+  uuid: '',
+  skuId: '',
+  count: 0,
+  reserveCount: 0,
   name: '',
-  specification: '',
-  unit: '',
-  price: 0,
-  stock: 0,
-  status: 0,
+  type: '',
+  status: '',
+  remark: '',
+  createAt: '',
+  updateAt: '',
+  isDelete: false,
 })
 
 const emits = defineEmits(['update:show', 'submit'])
@@ -81,30 +85,30 @@ const title = computed(() => {
 
 const initData = () => {
   if (mode.value === 'edit') {
-    form.id = data.value?.id ?? ''
-    form.name = data.value?.name ?? ''
-    form.specification = data.value?.specification ?? ''
-    form.unit = data.value?.unit ?? ''
-    form.price = data.value?.price ?? 0
-    form.stock = data.value?.stock ?? 0
-    form.status = data.value?.status ?? 0
+    Object.assign(form, data.value)
   } else {
-    form.id = ''
-    form.name = ''
-    form.specification = ''
-    form.unit = ''
-    form.price = 0
-    form.stock = 0
-    form.status = 0
+    Object.assign(form, {
+      id: '',
+      uuid: '',
+      skuId: '',
+      count: 0,
+      reserveCount: 0,
+      name: '',
+      type: '',
+      status: '',
+      remark: '',
+      createAt: '',
+      updateAt: '',
+      isDelete: false,
+    })
   }
 }
 
 const handleConfirm = async () => {
-  const params: IEditMedicine = {
-    ...form,
-  }
   if (mode.value === 'add') {
-    const res: never = await addMedicine(params)
+    const params: InsertStockReqDto = {} as unknown as InsertStockReqDto
+    Object.assign(params, form)
+    const res: never = await createStock(params)
     const { message, status } = res
     if (status === 200) {
       Message.success(message)
@@ -112,7 +116,9 @@ const handleConfirm = async () => {
       Message.warning(message)
     }
   } else {
-    const res: never = await updateMedicine(params)
+    const params: IStockUpdateReqDto = {} as unknown as IStockUpdateReqDto
+    Object.assign(params, form)
+    const res: never = await updateStock(params)
     const { status, message } = res
     if (status === 200) {
       Message.success(message)

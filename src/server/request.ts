@@ -1,7 +1,6 @@
 import axios from 'axios'
-import { Message } from '../utils'
-import { PROD_HOST } from '../__prod__'
-import { isProd } from '../utils/env'
+import { Message } from '@/utils'
+import { PROD_HOST } from '@/__prod__'
 import { getToken } from '../utils/token'
 
 const $request = axios.create({
@@ -10,7 +9,7 @@ const $request = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${getToken()}`,
+    Authorization: `Bearer ${getToken()}`,
   },
 })
 
@@ -43,7 +42,7 @@ $request.interceptors.response.use(
     Message.error('请求失败', message)
     console.error('请求失败:', error)
     return Promise.reject(error)
-  }
+  },
 )
 
 export default $request

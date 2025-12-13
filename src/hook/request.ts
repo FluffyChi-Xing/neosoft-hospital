@@ -1,6 +1,6 @@
-import { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 import * as ramda from 'ramda'
-import { UnwrapRef } from 'vue'
+import type { UnwrapRef } from 'vue'
 import useLoading from './loading'
 
 /**
@@ -21,17 +21,17 @@ const useRequest = ramda.curry(function <T>(
   defaultValue = [] as unknown as T[],
   isLoading = true,
 ) {
-  const { loading, start, done } = useLoading(isLoading);
-  const response = ref<T[]>(defaultValue);
-  start();
+  const { loading, start, done } = useLoading(isLoading)
+  const response = ref<T[]>(defaultValue)
+  start()
   api()
     .then((res) => {
-      response.value = res.data as unknown as UnwrapRef<T[]>;
+      response.value = res.data as unknown as UnwrapRef<T[]>
     })
-    .finally(_ => {
-      done();
-    });
-  return { loading, response };
+    .finally((_) => {
+      done()
+    })
+  return { loading, response }
 })
 
-export default useRequest;
+export default useRequest

@@ -22,7 +22,9 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button :loading="loading" type="primary" @click="handleSubmit" class="w-full">登录</el-button>
+              <el-button :loading="loading" type="primary" @click="handleSubmit" class="w-full"
+                >登录</el-button
+              >
             </el-form-item>
           </el-form>
         </div>

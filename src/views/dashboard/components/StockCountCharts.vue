@@ -66,7 +66,6 @@ const option = {
 const { init } = useCharts({ el: chartsRef, options: option })
 const showChart = computed(() => series.value.length > 0 && legendData.value.length > 0)
 
-
 const refreshChart = () => {
   return {
     duration: dateDuration.value,

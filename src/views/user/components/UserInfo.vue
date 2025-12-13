@@ -40,10 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { IUser, IUserUpdateReqDto } from '@/types/common'
-import { DEFAULT_AVATAR, USER_ROLE } from '@/const'
-import { getUserId, Message } from '@/utils'
-import { updateUser } from '@/server/api/user'
+import { ref, reactive, toRefs, computed, watchEffect } from 'vue'
+import { IUser, IUserUpdateReqDto } from '../../../types/common'
+import { updateUser } from '../../../server/api/user'
+import { Message, getUserId } from '../../../utils'
+import { DEFAULT_AVATAR } from '../../../const'
 
 type userInfoProps = {
   mode: 'view' | 'edit'
@@ -64,6 +65,10 @@ const form = reactive<IUser>({
   email: data.value?.email ?? '',
   password: data.value?.password ?? '',
   role: data.value?.role ?? '',
+  status: data.value?.status ?? '',
+  isDelete: data.value?.isDelete ?? false,
+  createAt: data.value?.createAt ?? '',
+  updateAt: data.value?.updateAt ?? '',
 })
 
 const initData = () => {
@@ -92,7 +97,7 @@ const handleSubmit = async () => {
     role: form.role,
   }
   const res = await updateUser(params)
-  const { code } = res
+  const { code } = res.data
   if (code === 200) {
     Message.success('更新用户信息成功')
     emits('update')

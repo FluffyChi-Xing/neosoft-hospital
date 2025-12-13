@@ -9,15 +9,22 @@
       </template>
       <div v-if="showNotices" class="w-full h-auto flex flex-col gap-2">
         <el-scrollbar>
-          <div v-for="(item, index) in notices" :key="index" class="w-full h-auto flex mb-2 items-center gap-2">
-            <el-tag :type="noticeStatusMap[item.type]">
+          <div
+            v-for="(item, index) in notices.slice(0, 3)"
+            :key="index"
+            class="w-full h-auto flex mb-2 items-center gap-2"
+          >
+            <el-tag :type="getNoticeStatus(item?.status ?? '')">
               {{ item.name }}
             </el-tag>
-            <el-tooltip :content="item.content">
-              <div class="flex-1 text-[14px] whitespace-nowrap text-ellipsis">
-                {{ item.content }}
-              </div>
-            </el-tooltip>
+            <div class="flex-1 text-[14px] whitespace-nowrap text-ellipsis">
+              {{ item.content }}
+            </div>
+            <div
+              class="w-auto text-gray-300 h-auto flex items-center whitespace-normal text-[14px]"
+            >
+              {{ item.createAt }}
+            </div>
           </div>
         </el-scrollbar>
       </div>
@@ -27,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { INoticeResDto } from '@/types/common'
+import type { INoticeResDto } from '@/types/common.ts'
 
 type alertCenterProps = {
   notices: INoticeResDto[]
@@ -45,6 +52,10 @@ const noticeStatusMap: Record<string, string> = {
   WARNING: 'warning',
   ERROR: 'error',
   DANGER: 'danger',
+}
+
+const getNoticeStatus = (index: string): 'info' | 'success' | 'warning' | 'error' | 'danger' => {
+  return noticeStatusMap[index] ?? 'info'
 }
 
 const { notices, loading } = toRefs(props)

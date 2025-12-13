@@ -1,5 +1,5 @@
 import $request from '../request'
-import { IUserLogin, IUserUpdateReqDto } from '../../types/common'
+import type { IUserLogin, IUserUpdateReqDto } from '@/types/common.ts'
 
 export const getUserDetail = (userId: number) =>
   $request({ url: `/user/getUserDetail?.userId=${userId}`, method: 'GET' })

@@ -1,5 +1,5 @@
-import { userStoreType } from '../store/user/types'
-import { IKVType } from '../types'
+import type { userStoreType } from '../store/user/types'
+import type { IKVType } from '@/types'
 
 export const PAGE_HEADER_CONTENT = '开放原子餐饮管理系统'
 

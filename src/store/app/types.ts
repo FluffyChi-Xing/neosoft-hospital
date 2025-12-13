@@ -1,4 +1,4 @@
-import { IDashboard } from '../../types/common'
+import type { IDashboard } from '@/types/common'
 
 export type appStoreState = {
   isOnline: boolean

@@ -1,6 +1,6 @@
 import * as ramda from 'ramda'
-import { Message } from '../utils'
-import { IPage } from '../types'
+import { Message } from '@/utils'
+import type { IPage } from '@/types'
 
 export type ITableConfig<T extends Record<string, never>> = {
   fetchData: (params?: Record<string, never>) => Promise<T[]>

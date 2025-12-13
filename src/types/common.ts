@@ -1,13 +1,13 @@
 export type IUser = {
-  id: number;
-  username: string;
-  password: string;
-  email: string;
-  role: string;
-  status: string;
-  isDelete: boolean;
-  createAt: string;
-  updateAt: string;
+  id: string
+  username: string
+  password: string
+  email: string
+  role: string
+  status: string
+  isDelete: boolean
+  createAt: string
+  updateAt: string
 }
 
 export type IEditUser = Omit<IUser, 'createAt' | 'updateAt'>
@@ -67,103 +67,115 @@ export type IRegistration = {
   updateAt: string
 }
 
-
 export type IEditRegistration = Omit<IRegistration, 'createAt' | 'updateAt'>
 
-
 export type IStockResDto = {
-  id: number;
-  uuid: string;
-  skuId: string;
-  count: number;
-  reserveCount: number;
-  name: string;
-  type: string;
-  status: string;
-  remark: string;
-  createAt: string;
-  updateAt: string;
-  isDelete: boolean;
-};
-
+  id: number
+  uuid: string
+  skuId: string
+  count: number
+  reserveCount: number
+  name: string
+  type: string
+  status: string
+  remark: string
+  createAt: string
+  updateAt: string
+  isDelete: boolean
+}
 
 export type IOrderResDto = {
-  id: number;
-  uuid: string;
-  userId: string;
-  amount: number;
-  name: string[];
-  address: string;
-  skuId: string[];
-  price: number;
-  totalPrice: number;
-  status: string;
-  isDelete: boolean;
-  createAt: string;
-  updateAt: string;
-};
-
+  id: number
+  uuid: string
+  userId: string
+  amount: number
+  name: string[]
+  address: string
+  skuId: string[]
+  price: number
+  totalPrice: number
+  status: string
+  isDelete: boolean
+  createAt: string
+  updateAt: string
+}
 
 export type IStockUpdateReqDto = {
-  id: number;
-  count: number;
-  name?: string;
-  type?: string;
-  status?: string;
-  remark?: string;
-  reservedCount?: number;
-};
-
+  id: number
+  count: number
+  name?: string
+  type?: string
+  status?: string
+  remark?: string
+  reservedCount?: number
+}
 
 export type IUserUpdateReqDto = {
-  id: number;
-  username: string;
-  password: string;
-  email: string;
-  role: string;
-};
+  id: number
+  username: string
+  password: string
+  email: string
+  role: string
+}
 
 export type IOrderUpdateReqDto = {
-  userId: number;
-  amount: number;
-  name: string[];
-  address: string;
-  skuId: string[];
-  price: number;
-  totalPrice: number;
-  status: string;
-  orderId: number;
-};
+  userId: number
+  amount: number
+  name: string[]
+  address: string
+  skuId: string[]
+  price: number
+  totalPrice: number
+  status: string
+  orderId: number
+}
 
 export type IStockAddReqDto = {
-  stockId: number;
-  count: number;
-};
+  stockId: number
+  count: number
+}
 
+export type InsertStockReqDto = {
+  name: string
+  type: string
+  count: number
+  status: string
+  remark: string
+  skuId: string[]
+  reservedCount: number
+}
 
 export type IOrderStatusUpdateReqDto = {
-  orderId: number;
-  userId: string;
-};
+  orderId: number
+  userId: string
+}
 
+export type orderItemReqDto = {
+  skuId: string
+  name: string
+  quantity: number
+}
 
 export type IOrderCreateReqDto = {
-  userId: string;
-  amount: number;
-  name: string[];
-  address: string;
-  skuId: string[];
-  price: number;
-  totalPrice: number;
-  status: string;
-  orderId?: string;
-};
+  userId: string
+  address: string
+  items: orderItemReqDto[]
+  status?: string
+  orderId?: string
+}
 
 export type INoticeResDto = {
-  id: number;
-  name: string;
-  status: string;
-  createAt: string;
-  updateAt: string;
-  isDelete: boolean;
-};
+  id: number
+  name: string
+  status: string
+  createAt: string
+  updateAt: string
+  isDelete: boolean
+}
+
+export type IOrderStatistic = {
+  turnover: number
+  orderCount: number
+  productCount: number
+  orderGrowth: number
+}

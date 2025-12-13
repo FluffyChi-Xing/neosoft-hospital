@@ -3,8 +3,10 @@
     <el-card :shadow="shadow" class="w-full">
       <div class="w-full h-full grid grid-cols-2 items-center gap-4">
         <div class="w-full h-full flex flex-col justify-center">
-          <div class="w-fit h-fit rounded-[40px] box-border flex items-start justify-center p-2 bg-gray-200">
-            <img :src="icon" alt="prefix-icon" class="object-contain">
+          <div
+            class="w-fit h-fit rounded-[40px] box-border flex items-start justify-center p-2 bg-gray-200"
+          >
+            <img :src="icon" alt="prefix-icon" class="object-contain" />
           </div>
         </div>
         <div class="w-full h-full flex flex-col justify-between">
@@ -57,12 +59,10 @@ const { data, shadow, title, suffix, icon } = toRefs(props)
   cursor: pointer;
 
   .object-contain {
-    transition: .5s all ease;
+    transition: 0.5s all ease;
   }
 
   &:hover {
-
-
     .object-contain {
       transform: scale(1.3);
     }
