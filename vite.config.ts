@@ -29,13 +29,13 @@ export default defineConfig({
     port: 3000,
     open: false,
     cors: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080', // replace with your backend domain
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:8080', // replace with your backend domain
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, '')
+    //   }
+    // }
   },
   build: {
     terserOptions: {

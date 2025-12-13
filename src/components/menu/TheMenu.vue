@@ -2,9 +2,9 @@
   <el-menu
     :default-active="activeIndex"
     :collapse="isCollapse"
-    :router="router"
+    :unique-opened="true"
     class="h-full"
-    background-color="#545c64"
+    background-color="#111827"
     text-color="#fff"
     active-text-color="#ffd04b"
   >
@@ -23,17 +23,17 @@ import NestMenuItem from '@/components/menu/NestMenuItem.vue'
 
 interface menuProps {
   isCollapse: boolean
-  router: boolean;
+  router: boolean
 }
 
 export type menuItemType = {
-  label: string;
-  icon?: string;
-  index: string;
-  hide?: boolean;
-  route: string;
-  children: menuItemType[];
-};
+  label: string
+  icon?: string
+  index: string
+  hide?: boolean
+  route: string
+  children: menuItemType[]
+}
 
 const props = withDefaults(defineProps<Partial<menuProps>>(), {
   isCollapse: false,
@@ -41,83 +41,85 @@ const props = withDefaults(defineProps<Partial<menuProps>>(), {
 })
 
 const route = useRoute()
-const activeIndex = ref<string>('');
-const menuRoutes = ref<menuItemType[]>([]);
-const { isCollapse, router } = toRefs(props);
+const activeIndex = ref<string>('')
+const menuRoutes = ref<menuItemType[]>([])
+const { isCollapse } = toRefs(props)
 
 const getMenuItems = (items: RouteRecordNormalized[]): menuItemType[] => {
-  return items.map((item: RouteRecordNormalized) => {
-    return {
-      label: item.meta?.title || item.name,
-      index: item.name,
-      children: item.children && item.children.length > 0 ? getMenuItems(item.children) : [],
-      icon: item.meta?.icon,
-      hide: item.meta?.hideInMenu ?? false,
-      route: item.path,
-    };
-  }).filter(item => !item.hide); // Filter out hidden items
-};
+  return items
+    .map((item: RouteRecordNormalized) => {
+      return {
+        label: item.meta?.title || item.name,
+        index: item.name,
+        children: item.children && item.children.length > 0 ? getMenuItems(item.children) : [],
+        icon: item.meta?.icon,
+        hide: item.meta?.hideInMenu ?? false,
+        route: item.path,
+      }
+    })
+    .filter((item) => !item.hide) // Filter out hidden items
+}
 
 const getMenus = () => {
   if (menuRoutes.value.length === 0) {
-    const menus: RouteRecordNormalized[] = cloneDeep(appRoutes);
+    const menus: RouteRecordNormalized[] = cloneDeep(appRoutes)
     if (menus && menus.length > 0) {
-      menuRoutes.value = menus.map((item: RouteRecordNormalized) => {
-        return {
-          label: item.meta?.title || item.name,
-          index: item.name,
-          children: item.children && item.children.length > 0 ? getMenuItems(item.children) : [],
-          icon: item.meta?.icon,
-          hide: item.meta?.hideInMenu ?? false,
-          route: item.path,
-        };
-      }).filter(item => !item.hide);
+      menuRoutes.value = menus
+        .map((item: RouteRecordNormalized) => {
+          return {
+            label: item.meta?.title || item.name,
+            index: item.name,
+            children: item.children && item.children.length > 0 ? getMenuItems(item.children) : [],
+            icon: item.meta?.icon,
+            hide: item.meta?.hideInMenu ?? false,
+            route: item.path,
+          }
+        })
+        .filter((item) => !item.hide)
     } else {
-      menuRoutes.value = [];
+      menuRoutes.value = []
     }
   }
-};
-
+}
 
 const findMenuItem = (items: menuItemType[], name: string): menuItemType | null => {
   for (const item of items) {
     if (item.index === name) {
-      return item;
+      return item
     }
     if (item.children && item.children.length > 0) {
-      const found = findMenuItem(item.children, name);
+      const found = findMenuItem(item.children, name)
       if (found) {
-        return found;
+        return found
       }
     }
   }
-  return null;
-};
+  return null
+}
 
 const getActiveIndex = () => {
   if (menuRoutes.value.length > 0) {
-    const name = route.name as string;
-    const foundItem = findMenuItem(menuRoutes.value, name);
+    const name = route.name as string
+    const foundItem = findMenuItem(menuRoutes.value, name)
     if (foundItem) {
-      activeIndex.value = foundItem.index;
+      activeIndex.value = foundItem.index
     } else {
-      activeIndex.value = menuRoutes.value[0].index;
+      activeIndex.value = menuRoutes.value[0].index
     }
   } else {
-    activeIndex.value = '';
+    activeIndex.value = ''
   }
-};
+}
 
 onMounted(() => {
-  getMenus();
-  getActiveIndex();
-  console.log('menuRoutes:', menuRoutes.value);
-});
-
+  getMenus()
+  getActiveIndex()
+  // console.log('menuRoutes:', menuRoutes.value);
+})
 
 watchEffect(() => {
-  getActiveIndex();
-});
+  getActiveIndex()
+})
 </script>
 
 <style scoped>

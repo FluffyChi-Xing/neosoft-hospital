@@ -17,12 +17,12 @@ const router = createRouter({
     ...appRoutes,
   ],
   scrollBehavior() {
-    return { top: 0 };
-  }
+    return { top: 0 }
+  },
 })
 
-console.log(appRoutes);
+// console.log(appRoutes);
 
-createRouteGuard(router);
+createRouteGuard(router)
 
-export default router;
+export default router
