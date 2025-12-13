@@ -176,10 +176,10 @@ const refreshData = () => {
 const handleOrderCancel = async (row: IOrderResDto) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
-  const { username } = userInfo
+  const { id } = userInfo
   const params: IOrderStatusUpdateReqDto = {
     orderId: row.id,
-    userId: username,
+    userId: id,
   }
   const res = await cancelOrder(params)
   const { code, message, statusCode } = res
@@ -196,10 +196,10 @@ const handleOrderCancel = async (row: IOrderResDto) => {
 const handleOrderConfirm = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
-  const { username } = userInfo
+  const { id } = userInfo
   const params: IOrderStatusUpdateReqDto = {
     orderId,
-    userId: username,
+    userId: id,
   }
   const res = await confirmOrder(params)
   const { code, message, statusCode } = res
@@ -215,10 +215,10 @@ const handleOrderConfirm = async (orderId: string) => {
 const handleOrderFinish = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
-  const { username } = userInfo
+  const { id } = userInfo
   const params: IOrderStatusUpdateReqDto = {
     orderId,
-    userId: username,
+    userId: id,
   }
   const res = await finishOrder(params)
   const { code, message, statusCode } = res
@@ -234,10 +234,10 @@ const handleOrderFinish = async (orderId: string) => {
 const handleOrderDelete = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
-  const { username } = userInfo
+  const { id } = userInfo
   const params: IOrderStatusUpdateReqDto = {
     orderId,
-    userId: username,
+    userId: id,
   }
   const res = await deleteOrder(params)
   const { code, message, statusCode } = res
