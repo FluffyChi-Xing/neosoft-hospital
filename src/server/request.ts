@@ -2,10 +2,12 @@ import axios from 'axios'
 import { Message } from '@/utils'
 import { PROD_HOST } from '@/__prod__'
 import { getToken } from '../utils/token'
+import { isProd } from '@/utils/env'
 
 const $request = axios.create({
-  // baseURL: isProd ? PROD_HOST : import.meta.env.VITE_API_BASE_URL,
-  baseURL: PROD_HOST,
+  // 在生产环境使用相对路径，通过 Vercel 代理
+  // 在开发环境直接访问后端
+  baseURL: isProd ? '/api/v1' : PROD_HOST,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
