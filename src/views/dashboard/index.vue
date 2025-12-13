@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
-import type { INoticeResDto, IOrderStatistic } from '@/types/common.ts'
+import type { IOrderStatistic } from '@/types/common.ts'
 import { Message } from '@/utils'
 import AlertCenter from './components/AlertCenter.vue'
 import { getOrderStatistic } from '@/server/api/order.ts'
@@ -107,8 +107,8 @@ const refreshData = () => {
   queryNoticeList()
 }
 
-const defaultNotices = Array.from({ length: 3 }).fill({})
-const { loading, response: notices } = useRequest<INoticeResDto>(queryNoticeList, defaultNotices)
+const defaultNotices = []
+const { loading, response: notices } = useRequest(queryNoticeList, defaultNotices)
 
 onMounted(() => {
   getStatistic()

@@ -56,10 +56,10 @@
 </template>
 
 <script setup lang="ts">
-import { IOrderCreateReqDto } from '../../../types/common'
-import { getUserId, Message } from '../../../utils'
-import { IKVType } from '../../../types'
-import { createOrder, updateOrder } from '../../../server/api/order'
+import type { IOrderCreateReqDto, IResponse } from '@/types/common.ts'
+import { getUserId, Message } from '@/utils'
+import type { IKVType } from '@/types'
+import { createOrder } from '@/server/api/order.ts'
 
 type addProp = {
   show: boolean
@@ -67,7 +67,7 @@ type addProp = {
   data: IOrderCreateReqDto | null
 }
 
-const props = withDefaults(defineProps<addProp>(), {
+const props = withDefaults(defineProps<Partial<addProp>>(), {
   show: false,
   mode: 'add',
   data: null,
@@ -76,7 +76,7 @@ const props = withDefaults(defineProps<addProp>(), {
 const { show, mode } = toRefs(props)
 
 const form = reactive<IOrderCreateReqDto>({
-  userId: '',
+  userId: 0,
   address: '',
   items: [],
   status: 'PENDING',
@@ -133,22 +133,23 @@ const handleConfirm = async () => {
     ...form,
   }
   if (mode.value === 'add') {
-    const res: never = await createOrder(params)
-    const { code } = res
+    const res = await createOrder(params)
+    const { code } = res as unknown as IResponse<never>
     if (code === 200) {
       Message.success('创建成功')
     } else {
       Message.warning('创建失败')
     }
-  } else {
-    const res: never = await updateOrder(params)
-    const { code } = res
-    if (code === 200) {
-      Message.success('更新成功')
-    } else {
-      Message.warning('更新失败')
-    }
   }
+  // else {
+  //   const res = await updateOrder(params)
+  //   const { code } = res as unknown as IResponse<never>
+  //   if (code === 200) {
+  //     Message.success('更新成功')
+  //   } else {
+  //     Message.warning('更新失败')
+  //   }
+  // }
   visible.value = false
   emits('submit')
 }

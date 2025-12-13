@@ -12,7 +12,7 @@
           clearable
           class="flex-1"
         />
-        <el-button type="primary">重置</el-button>
+        <el-button disabled type="primary">重置</el-button>
       </div>
     </template>
     <div ref="chartsRef" class="w-full h-full min-h-[350px] object-contain"></div>

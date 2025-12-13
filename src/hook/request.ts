@@ -1,6 +1,16 @@
 import * as ramda from 'ramda'
 import type { UnwrapRef } from 'vue'
 import useLoading from './loading'
+import { AxiosResponse } from 'axios'
+
+
+export interface HttpResponse<T = unknown> {
+  status: number;
+  msg: string;
+  code: number;
+  data: T;
+}
+
 
 /**
  * @description 使用 ramda.curry 保障 useRequest 的灵活性，可以传递默认值和 isLoading
@@ -15,22 +25,21 @@ import useLoading from './loading'
  *
  * @returns {Object} { loading, response }
  */
-const useRequest = ramda.curry(function <T>(
-  api: () => Promise<never>,
-  defaultValue = [] as unknown as T[],
+const useRequest = ramda.curry(function useRequest<T>(
+  api: () => Promise<AxiosResponse<HttpResponse>>,
+  defaultValue = [] as unknown as T,
   isLoading = true,
 ) {
-  const { loading, start, done } = useLoading(isLoading)
-  const response = ref<T[]>(defaultValue)
-  start()
+  const { loading, done } = useLoading(isLoading)
+  const response = ref<T>(defaultValue)
   api()
-    .then((res: any) => {
-      response.value = res.data as unknown as UnwrapRef<T[]>
+    .then((res) => {
+      response.value = res.data as unknown as UnwrapRef<T>
     })
     .finally(() => {
       done()
     })
-  return { loading, response }
+  return { loading, response } as unknown as { loading: Ref<boolean>, response: UnwrapRef<T> }
 })
 
 export default useRequest

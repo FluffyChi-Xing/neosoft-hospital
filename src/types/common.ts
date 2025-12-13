@@ -108,6 +108,8 @@ export type IStockUpdateReqDto = {
   status?: string
   remark?: string
   reservedCount?: number
+  skuId?: string
+  price?: number
 }
 
 export type IUserUpdateReqDto = {
@@ -141,8 +143,9 @@ export type InsertStockReqDto = {
   count: number
   status: string
   remark: string
-  skuId: string[]
+  skuId: string
   reservedCount: number
+  price: number
 }
 
 export type IOrderStatusUpdateReqDto = {
@@ -157,7 +160,7 @@ export type orderItemReqDto = {
 }
 
 export type IOrderCreateReqDto = {
-  userId: string
+  userId: number
   address: string
   items: orderItemReqDto[]
   status?: string
@@ -179,3 +182,9 @@ export type IOrderStatistic = {
   productCount: number
   orderGrowth: number
 }
+
+export type IResponse<T> = {
+  code: number;
+  data: T;
+  message: string;
+};

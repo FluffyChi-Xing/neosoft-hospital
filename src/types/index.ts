@@ -1,6 +1,7 @@
 export type IPage = {
   current: number
   size: number
+  total?: number;
   queryBean?: Record<string, never>
 }
 

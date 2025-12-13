@@ -1,9 +1,16 @@
 import type { Router, RouteRecordNormalized } from 'vue-router'
 import NProgress from 'nprogress'
-import { isLogin } from '../utils'
+import { isLogin } from '@/utils'
+import { cancelAllPendingRequests } from '../server/request'
 
 const setPageGuard = (router: Router) => {
   router.beforeEach((to, from, next) => {
+    // 路由切换时取消所有未完成的请求
+    if (from.path !== to.path) {
+      cancelAllPendingRequests()
+      console.log('路由切换：已取消所有未完成的请求')
+    }
+
     if (to.meta?.title) {
       document.title = to.meta.title as string
     }
@@ -34,14 +41,15 @@ const setPageGuard = (router: Router) => {
 }
 
 export const getRoutes = () => {
-  let routes = []
-  if (routes.length === 0) {
+  let routes = {}
+  const result = []
+  if (result.length === 0) {
     routes = import.meta.glob('./modules/**/*.{ts,tsx}', {
       eager: true,
     })
-    routes = [...formatModules(routes, [])]
+    result.push(...formatModules(routes as never, []))
   }
-  return routes
+  return result
 }
 
 export const formatModules = (_modules: never, result: RouteRecordNormalized[]) => {

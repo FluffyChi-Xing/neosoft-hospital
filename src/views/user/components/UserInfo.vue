@@ -40,18 +40,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, toRefs, computed, watchEffect } from 'vue'
-import { IUser, IUserUpdateReqDto } from '../../../types/common'
-import { updateUser } from '../../../server/api/user'
-import { Message, getUserId } from '../../../utils'
-import { DEFAULT_AVATAR } from '../../../const'
+import type { IUserUpdateReqDto } from '@/types/common.ts'
+import { updateUser } from '@/server/api/user.ts'
+import { Message, getUserId } from '@/utils'
+import { DEFAULT_AVATAR, USER_ROLE } from '@/const'
+import { IUserResDto } from '@/utils/token.ts'
 
 type userInfoProps = {
   mode: 'view' | 'edit'
-  data: IUser | null
+  data: IUserResDto | null
 }
 
-const props = withDefaults(defineProps<userInfoProps>(), {
+const props = withDefaults(defineProps<Partial<userInfoProps>>(), {
   mode: 'view',
   data: null,
 })
@@ -59,8 +59,8 @@ const props = withDefaults(defineProps<userInfoProps>(), {
 const { mode, data } = toRefs(props)
 
 const formRef = ref()
-const form = reactive<IUser>({
-  id: data.value?.id ?? '',
+const form = reactive<IUserResDto>({
+  id: data.value?.id ?? 0,
   username: data.value?.username ?? '',
   email: data.value?.email ?? '',
   password: data.value?.password ?? '',
@@ -69,6 +69,7 @@ const form = reactive<IUser>({
   isDelete: data.value?.isDelete ?? false,
   createAt: data.value?.createAt ?? '',
   updateAt: data.value?.updateAt ?? '',
+  token: '',
 })
 
 const initData = () => {

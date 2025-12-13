@@ -49,5 +49,10 @@ export default defineConfig({
         pure_funcs: ['console.log', 'console.error', 'console.warn']
       },
     },
-  }
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+      },
+    },
+  },
 })

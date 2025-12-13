@@ -7,7 +7,15 @@ import type {
   IStockUpdateReqDto,
 } from '@/types/common.ts'
 
-export const queryMedicinePage = (config: IPage<never>) =>
+export const stockStatus: Record<string, string> = {
+  available: '可售',
+  unavailable: '停售',
+  out_of_stock: '缺货',
+  reserved: '预留',
+  low_stock: '低库存',
+}
+
+export const queryMedicinePage = (config: IPage) =>
   $request({ url: '/api/stock/page', method: 'POST', data: config })
 
 export const addMedicine = (data: IEditMedicine) =>
@@ -33,3 +41,5 @@ export const addStockCount = (data: IStockAddReqDto) =>
 
 export const createStock = (data: InsertStockReqDto) =>
   $request({ url: '/stock/create', method: 'POST', data })
+
+export const queryStockDict = () => $request({ url: '/stock/queryDict', method: 'GET' })

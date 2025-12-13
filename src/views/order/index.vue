@@ -51,7 +51,7 @@
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
                   <el-button
-                    :disabled="canConfirm(row.status)"
+                    :disabled="!canConfirm(row.status)"
                     type="success"
                     size="small"
                     @click="handleOrderConfirm(row?.id)"
@@ -73,7 +73,9 @@
                   >
                   <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row.id)">
                     <template #reference>
-                      <el-button type="danger" size="small">删除</el-button>
+                      <el-button :disabled="!canDelete(row.status)" type="danger" size="small"
+                        >删除</el-button
+                      >
                     </template>
                   </el-popconfirm>
                 </div>
@@ -95,16 +97,11 @@
       </div>
     </div>
   </div>
-  <EditOrderModal
-    v-model:show="showModal"
-    :data="currentRow"
-    :mode="modalMode"
-    @submit="refreshData"
-  />
+  <EditOrderModal v-model:show="showModal" :mode="modalMode" @submit="refreshData" />
 </template>
 
 <script setup lang="ts">
-import type { IOrderResDto, IOrderStatusUpdateReqDto } from '@/types/common'
+import type { IOrderResDto, IOrderStatusUpdateReqDto, IResponse } from '@/types/common'
 import useLoading from '@/hook/loading'
 import useDateFormat from '@/hook/date'
 import useStorage from '@/hook/storage'
@@ -137,22 +134,28 @@ const { get } = useStorage('local')
 const page = reactive<IPage>({
   current: 1,
   size: 10,
+  queryBean: {},
   total: 0,
 })
 const canConfirm = (index: string): boolean => {
-  return ['CONFIRMED', 'PAID', 'PENDING'].includes(index)
+  return ['PAID'].includes(index) // 只有已支付的订单可以确认
 }
 const canFinished = (index: string): boolean => {
-  return ['CONFIRMED', 'PAID', 'COMPLETED', 'PENDING'].includes(index)
+  return ['CONFIRMED'].includes(index) // 只有已确认的订单可以完成
 }
 const canCancel = (index: string): boolean => {
-  return ['CONFIRMED', 'PAID', 'PENDING'].includes(index)
+  return ['PAID', 'PENDING'].includes(index) // 只有已支付和待确认的订单可以取消
+}
+const canDelete = (index: string): boolean => {
+  return ['COMPLETED', 'CANCELLED'].includes(index) // 只有已完成和已取消的订单可以删除
 }
 
 const getData = async () => {
   start()
-  const res = await queryOrderPage({ ...page })
-  const { code, data } = res
+  const res = await queryOrderPage({ ...page }).finally(() => {
+    done()
+  })
+  const { code, data } = res as unknown as IResponse<never>
   done()
   if (code === 200) {
     const { records, total, current, size } = data as unknown as IPageVo<IOrderResDto>
@@ -182,10 +185,10 @@ const handleOrderCancel = async (row: IOrderResDto) => {
     userId: id,
   }
   const res = await cancelOrder(params)
-  const { code, message, statusCode } = res
-  if (statusCode === 500) {
-    Message.error(message)
-  }
+  const { code, message } = res as unknown as IResponse<never>
+  // if (statusCode === 500) {
+  //   Message.error(message)
+  // }
   if (code === 200) {
     refreshData()
   } else {
@@ -193,7 +196,7 @@ const handleOrderCancel = async (row: IOrderResDto) => {
   }
 }
 
-const handleOrderConfirm = async (orderId: string) => {
+const handleOrderConfirm = async (orderId: number) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
@@ -202,17 +205,18 @@ const handleOrderConfirm = async (orderId: string) => {
     userId: id,
   }
   const res = await confirmOrder(params)
-  const { code, message, statusCode } = res
-  if (statusCode === 500) {
-    Message.error(message)
-  } else if (code === 200) {
+  const { code, message } = res as unknown as IResponse<never>
+  // if (statusCode === 500) {
+  //   Message.error(message)
+  // } else
+  if (code === 200) {
     refreshData()
   } else {
     Message.warning(message)
   }
 }
 
-const handleOrderFinish = async (orderId: string) => {
+const handleOrderFinish = async (orderId: number) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
@@ -221,17 +225,18 @@ const handleOrderFinish = async (orderId: string) => {
     userId: id,
   }
   const res = await finishOrder(params)
-  const { code, message, statusCode } = res
-  if (statusCode === 500) {
-    Message.error(message)
-  } else if (code === 200) {
+  const { code, message } = res as unknown as IResponse<never>
+  // if (statusCode === 500) {
+  //   Message.error(message)
+  // } else
+  if (code === 200) {
     refreshData()
   } else {
     Message.warning(message)
   }
 }
 
-const handleOrderDelete = async (orderId: string) => {
+const handleOrderDelete = async (orderId: number) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
@@ -240,10 +245,11 @@ const handleOrderDelete = async (orderId: string) => {
     userId: id,
   }
   const res = await deleteOrder(params)
-  const { code, message, statusCode } = res
-  if (statusCode === 500) {
-    Message.error(message)
-  } else if (code === 200) {
+  const { code, message } = res as unknown as IResponse<never>
+  // if (statusCode === 500) {
+  //   Message.error(message)
+  // } else
+  if (code === 200) {
     refreshData()
   } else {
     Message.warning(message)

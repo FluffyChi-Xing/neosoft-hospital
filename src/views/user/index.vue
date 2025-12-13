@@ -29,6 +29,7 @@ import UserInfo from './components/UserInfo.vue'
 import useStorage from '../../hook/storage'
 import type { userStoreType } from '@/store/user/types.ts'
 import useUserStore from '../../store/user'
+import { IResponse } from '@/types/common.ts'
 
 const userStore = useUserStore()
 const user = ref<userStoreType | null>()
@@ -38,8 +39,8 @@ const { get } = useStorage('local')
 const getUserInfo = async () => {
   const userInfo = get('userInfo')
   const { id } = userInfo
-  const res: never = await getUserDetail(id ?? 0)
-  const { code, data } = res
+  const res = await getUserDetail(id ?? 0)
+  const { code, data } = res as unknown as IResponse<never>
   if (code === 200 && data) {
     user.value = data
     userStore.updateUser(data)

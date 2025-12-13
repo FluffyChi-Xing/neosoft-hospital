@@ -2,13 +2,13 @@
   <div class="w-full h-full flex flex-col gap-4">
     <PageHeader content="库存管理">
       <template #action>
-        <el-button type="primary" @click="addStock">新增库存</el-button>
+        <el-button type="primary" @click="addStock">新建库存</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
       </template>
     </PageHeader>
     <div class="w-full h-full flex flex-col gap-4">
       <div class="w-full h-full flex">
-        <el-card shadow="never" class="w-full h-full">
+        <el-card shadow="never" class="w-full h-fit">
           <el-table v-loading="loading" :data="dataList" border stripe fit>
             <el-table-column prop="id" label="ID" />
             <el-table-column prop="uuid" label="uuid" show-overflow-tooltip width="100" />
@@ -33,10 +33,17 @@
                 <el-tag size="small">{{ row.type }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="备注" prop="remark" />
+            <el-table-column label="备注" prop="remark" show-overflow-tooltip />
             <el-table-column prop="status" label="状态">
               <template #default="{ row }">
-                <el-tag>{{ stockStatus[row.status] ?? '未知' }}</el-tag>
+                <el-tag :type="getStockTagStatus(row.status)" size="small">{{
+                  stockStatus[row.status] ?? '未知'
+                }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="price" label="单价">
+              <template #default="{ row }">
+                <el-tag>￥ {{ row?.price ?? '-' }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="createAt" label="创建时间">
@@ -52,7 +59,7 @@
             <el-table-column label="操作" width="180" :fixed="'right'">
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
-                  <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+                  <!--                  <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>-->
                   <el-popconfirm title="确定删除该库存吗？" @confirm="handleDelete(row?.id)">
                     <template #reference>
                       <el-button type="danger" size="small">删除</el-button>
@@ -86,12 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import type { IStockResDto } from '@/types/common.ts'
+import type { IResponse, IStockResDto } from '@/types/common.ts'
 import useLoading from '../../hook/loading'
 import useDateFormat from '../../hook/date'
 import type { IPage, IPageVo } from '@/types'
-import { deleteStock, queryStockPage } from '@/server/api/stock.ts'
+import { deleteStock, queryStockPage, stockStatus } from '@/server/api/stock.ts'
 import EditStockModal from './components/EditStockModal.vue'
+import { Message } from '@/utils'
+import PageHeader from '@/components/PageHeader.vue'
 
 const modalMode = ref<'add' | 'edit'>('add')
 const dataList = ref<IStockResDto[]>([])
@@ -104,10 +113,15 @@ const page = reactive<IPage>({
   size: 10,
   queryBean: {},
 })
-const stockStatus: Record<string, string> = {
-  available: '可售',
-  unavailable: '停售',
-  out_of_stock: '缺货',
+const stockTagStatusMap: Record<string, string> = {
+  available: 'primary',
+  unavailable: 'warning',
+  out_of_stock: 'danger',
+  reserved: 'info',
+  low_stock: 'success',
+}
+const getStockTagStatus = (index: string) => {
+  return stockTagStatusMap[index] ?? 'info'
 }
 const skuIdFormatter = (index: string): string[] => {
   const result: string[] = []
@@ -123,10 +137,11 @@ const skuIdFormatter = (index: string): string[] => {
 }
 
 const handleDelete = async (skuId: string) => {
-  const res: never = await deleteStock(skuId)
-  const { code, message } = res
+  const res = await deleteStock(skuId)
+  const { code, message } = res as unknown as IResponse<never>
   if (code !== 200) {
-    Message.error('删除失败', message)
+    console.error('Failed to delete stock:', message)
+    Message.error('删除失败')
     return
   }
   refreshData()
@@ -138,17 +153,17 @@ const addStock = () => {
   currentRow.value = null
 }
 
-const handleEdit = (row: IStockResDto) => {
-  showModal.value = true
-  modalMode.value = 'edit'
-  currentRow.value = row
-}
+// const handleEdit = (row: IStockResDto) => {
+//   showModal.value = true
+//   modalMode.value = 'edit'
+//   currentRow.value = row
+// }
 
 const getStockPage = async () => {
   start()
-  const res: never = await queryStockPage({ ...page })
+  const res = await queryStockPage({ ...page })
   done()
-  const { code, data } = res
+  const { code, data } = res as unknown as IResponse<never>
   if (code === 200) {
     const { records, total, current, size } = data as unknown as IPageVo<IStockResDto>
     dataList.value = records
@@ -156,6 +171,11 @@ const getStockPage = async () => {
     page.size = size
     page.total = total
   }
+}
+
+const handlePageChange = (index: number) => {
+  page.current = index
+  refreshData()
 }
 
 const refreshData = () => {
