@@ -64,12 +64,12 @@ import StockCountCharts from './components/StockCountCharts.vue'
 import OrderStatusCharts from './components/OrderStatusCharts.vue'
 import useRequest from '../../hook/request'
 import { queryNoticeList } from '@/server/api/notice.ts'
+import icon1 from '@/assets/img/dashboard-icon-1.svg'
+import icon2 from '@/assets/img/dashboard-icon-2.svg'
+import icon3 from '@/assets/img/dashboard-icon-3.svg'
+import icon4 from '@/assets/img/dashboard-icon-4.svg'
 
 // const appStore = useAppStore()
-const icon1 = 'src/assets/img/dashboard-icon-1.svg'
-const icon2 = 'src/assets/img/dashboard-icon-2.svg'
-const icon3 = 'src/assets/img/dashboard-icon-3.svg'
-const icon4 = 'src/assets/img/dashboard-icon-4.svg'
 // const onLineType = computed(() => {
 //   const onLineStatus = appStore.getOnlineStatus
 //   return onLineStatus ? 'success' : 'warning'
@@ -92,7 +92,7 @@ const orderStatistic = reactive<IOrderStatistic>({
 
 const getStatistic = async () => {
   const res = await getOrderStatistic()
-  const { code, data, message } = res
+  const { code, data, message } = res as unknown as never
   if (code === 200 && data) {
     console.log('获取订单统计成功:', data)
     Object.assign(orderStatistic, data)

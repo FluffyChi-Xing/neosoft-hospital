@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { appStoreState } from './types'
+import { IDashboard } from '@/types/common.ts'
 
 const useAppStore = defineStore('app', {
   state: (): appStoreState => ({
