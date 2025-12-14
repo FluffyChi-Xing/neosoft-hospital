@@ -1,8 +1,8 @@
-export type IPage = {
+export type IPage<T extends Record<never, never> = Record<never, never>> = {
   current: number
   size: number
   total?: number;
-  queryBean?: Record<string, never>
+  queryBean?: T
 }
 
 export type IKVType = {

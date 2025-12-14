@@ -4,6 +4,19 @@
       <template #action>
         <el-button type="primary" @click="handleOrderAdd">下单</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
+        <el-select
+          v-model="page.queryBean.status"
+          placeholder="选择订单状态"
+          clearable
+          @change="handleOrderFilter"
+        >
+          <el-option
+            v-for="(item, index) in statusFilterOptions"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </template>
     </PageHeader>
     <div class="w-full h-full flex flex-col gap-4">
@@ -126,15 +139,21 @@ const orderStatus: Record<string, string> = {
   CANCELLED: '已取消',
   CONFIRMED: '已确认',
   PENDING: '待确认',
+  FINISHED: '已完成',
 }
+const statusFilterOptions = computed(() => {
+  return Object.entries(orderStatus).map(([key, value]) => ({ label: value, value: key }))
+})
 const currentRow = ref<IOrderResDto | null>(null)
 const { loading, start, done } = useLoading(false)
 const { getYMD } = useDateFormat(undefined)
 const { get } = useStorage('local')
-const page = reactive<IPage>({
+const page = reactive<IPage<{ status: string }>>({
   current: 1,
   size: 10,
-  queryBean: {},
+  queryBean: {
+    status: '',
+  },
   total: 0,
 })
 const canConfirm = (index: string): boolean => {
@@ -147,7 +166,7 @@ const canCancel = (index: string): boolean => {
   return ['PAID', 'PENDING'].includes(index) // 只有已支付和待确认的订单可以取消
 }
 const canDelete = (index: string): boolean => {
-  return ['COMPLETED', 'CANCELLED'].includes(index) // 只有已完成和已取消的订单可以删除
+  return ['COMPLETED', 'CANCELLED', 'FINISHED'].includes(index) // 只有已完成、已取消的订单可以删除
 }
 
 const getData = async () => {
@@ -173,7 +192,18 @@ const handleOrderAdd = () => {
 }
 
 const refreshData = () => {
+  page.current = 1
+  page.size = 10
+  page.queryBean = {
+    status: '',
+  }
+  page.total = 0
   getData()
+}
+
+const handleOrderFilter = (index: string) => {
+  page.queryBean.status = index
+  refreshData()
 }
 
 const handleOrderCancel = async (row: IOrderResDto) => {
