@@ -149,7 +149,7 @@ export type InsertStockReqDto = {
 }
 
 export type IOrderStatusUpdateReqDto = {
-  orderId: number
+  orderId: string
   userId: string
 }
 

@@ -54,24 +54,24 @@
                     :disabled="canConfirm(row.status)"
                     type="success"
                     size="small"
-                    @click="handleOrderConfirm(row?.id)"
+                    @click="handleOrderConfirm(row?.uuid)"
                     >确认</el-button
                   >
                   <el-button
                     :disabled="canFinished(row.status)"
                     type="warning"
                     size="small"
-                    @click="handleOrderFinish(row?.id)"
+                    @click="handleOrderFinish(row?.uuid)"
                     >完成</el-button
                   >
                   <el-button
                     :disabled="canCancel(row.status)"
                     type="primary"
                     size="small"
-                    @click="handleOrderCancel(row)"
+                    @click="handleOrderCancel(row?.uuid)"
                     >取消</el-button
                   >
-                  <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row.id)">
+                  <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row?.uuid)">
                     <template #reference>
                       <el-button :disabled="canDelete(row.status)" type="danger" size="small"
                         >删除</el-button
@@ -196,7 +196,7 @@ const handleOrderCancel = async (row: IOrderResDto) => {
   }
 }
 
-const handleOrderConfirm = async (orderId: number) => {
+const handleOrderConfirm = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
@@ -216,7 +216,7 @@ const handleOrderConfirm = async (orderId: number) => {
   }
 }
 
-const handleOrderFinish = async (orderId: number) => {
+const handleOrderFinish = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
@@ -236,7 +236,7 @@ const handleOrderFinish = async (orderId: number) => {
   }
 }
 
-const handleOrderDelete = async (orderId: number) => {
+const handleOrderDelete = async (orderId: string) => {
   const userInfo = get('userInfo')
   if (!userInfo) return
   const { id } = userInfo
