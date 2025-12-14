@@ -51,21 +51,21 @@
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
                   <el-button
-                    :disabled="canConfirm(row.status)"
+                    :disabled="!canConfirm(row.status)"
                     type="success"
                     size="small"
                     @click="handleOrderConfirm(row?.uuid)"
                     >确认</el-button
                   >
                   <el-button
-                    :disabled="canFinished(row.status)"
+                    :disabled="!canFinished(row.status)"
                     type="warning"
                     size="small"
                     @click="handleOrderFinish(row?.uuid)"
                     >完成</el-button
                   >
                   <el-button
-                    :disabled="canCancel(row.status)"
+                    :disabled="!canCancel(row.status)"
                     type="primary"
                     size="small"
                     @click="handleOrderCancel(row?.uuid)"
@@ -73,7 +73,7 @@
                   >
                   <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row?.uuid)">
                     <template #reference>
-                      <el-button :disabled="canDelete(row.status)" type="danger" size="small"
+                      <el-button :disabled="!canDelete(row.status)" type="danger" size="small"
                         >删除</el-button
                       >
                     </template>
@@ -138,7 +138,7 @@ const page = reactive<IPage>({
   total: 0,
 })
 const canConfirm = (index: string): boolean => {
-  return ['PAID'].includes(index) // 只有已支付的订单可以确认
+  return ['PAID', 'PENDING'].includes(index) // 只有已支付和待确认的订单可以确认
 }
 const canFinished = (index: string): boolean => {
   return ['CONFIRMED'].includes(index) // 只有已确认的订单可以完成
@@ -181,7 +181,7 @@ const handleOrderCancel = async (row: IOrderResDto) => {
   if (!userInfo) return
   const { id } = userInfo
   const params: IOrderStatusUpdateReqDto = {
-    orderId: row.id,
+    orderId: row.uuid,
     userId: id,
   }
   const res = await cancelOrder(params)
