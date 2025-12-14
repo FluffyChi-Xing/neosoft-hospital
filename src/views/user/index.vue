@@ -51,12 +51,7 @@ const getUserInfo = async () => {
 }
 
 const initData = async () => {
-  const data = userStore.getUserInfo
-  if (data) {
-    user.value = data
-  } else {
-    await getUserInfo()
-  }
+  await getUserInfo()
 }
 
 const handleUpdateDetail = async () => {

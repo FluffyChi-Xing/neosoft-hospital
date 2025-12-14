@@ -8,7 +8,7 @@
     </PageHeader>
     <div class="w-full h-full flex flex-col gap-4">
       <div class="w-full h-full flex">
-        <el-card shadow="never" class="w-full h-full">
+        <el-card shadow="never" class="w-full h-fit">
           <el-table v-loading="loading" :data="dataList" border stripe fit>
             <!-- order -->
             <el-table-column prop="id" label="ID" />
@@ -51,21 +51,21 @@
               <template #default="{ row }">
                 <div class="w-full h-auto gap-4 flex items-center justify-center">
                   <el-button
-                    :disabled="!canConfirm(row.status)"
+                    :disabled="canConfirm(row.status)"
                     type="success"
                     size="small"
                     @click="handleOrderConfirm(row?.id)"
                     >确认</el-button
                   >
                   <el-button
-                    :disabled="!canFinished(row.status)"
+                    :disabled="canFinished(row.status)"
                     type="warning"
                     size="small"
                     @click="handleOrderFinish(row?.id)"
                     >完成</el-button
                   >
                   <el-button
-                    :disabled="!canCancel(row.status)"
+                    :disabled="canCancel(row.status)"
                     type="primary"
                     size="small"
                     @click="handleOrderCancel(row)"
@@ -73,7 +73,7 @@
                   >
                   <el-popconfirm title="确定删除该预约吗？" @confirm="handleOrderDelete(row.id)">
                     <template #reference>
-                      <el-button :disabled="!canDelete(row.status)" type="danger" size="small"
+                      <el-button :disabled="canDelete(row.status)" type="danger" size="small"
                         >删除</el-button
                       >
                     </template>

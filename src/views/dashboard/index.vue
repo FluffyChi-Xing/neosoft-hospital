@@ -8,7 +8,7 @@
         <!--        }}</el-button>-->
       </template>
     </PageHeader>
-    <div class="w-full h-auto flex flex-col">
+    <div class="w-full h-fit flex flex-col">
       <AlertCenter :loading="loading" :notices="notices" />
     </div>
     <div class="w-full h-auto grid grid-cols-5 gap-4">

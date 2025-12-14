@@ -172,6 +172,7 @@ export type INoticeResDto = {
   name: string
   status: string
   createAt: string
+  content: string
   updateAt: string
   isDelete: boolean
 }

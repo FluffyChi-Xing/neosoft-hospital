@@ -4,7 +4,7 @@
       <template #header>
         <div class="w-full h-auto flex justify-between items-center">
           <div class="text-[1rem] w-auto flex items-center whitespace-nowrap">公告</div>
-          <el-link type="primary" underline="never">查看更多</el-link>
+          <!--          <el-link type="primary" underline="never">查看更多</el-link>-->
         </div>
       </template>
       <div v-if="showNotices" class="w-full h-auto flex flex-col gap-2">
@@ -41,6 +41,8 @@ type alertCenterProps = {
   loading: boolean
 }
 
+type elementStatusEnum = 'info' | 'success' | 'warning' | 'error' | 'danger' | unknown;
+
 const props = withDefaults(defineProps<Partial<alertCenterProps>>(), {
   notices: () => [],
   loading: false,
@@ -54,7 +56,7 @@ const noticeStatusMap: Record<string, string> = {
   DANGER: 'danger',
 }
 
-const getNoticeStatus = (index: string): 'info' | 'success' | 'warning' | 'error' | 'danger' => {
+const getNoticeStatus = (index: string): elementStatusEnum => {
   return noticeStatusMap[index] ?? 'info'
 }
 
