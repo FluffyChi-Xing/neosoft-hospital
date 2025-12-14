@@ -5,10 +5,11 @@
         <el-button type="primary" @click="handleOrderAdd">下单</el-button>
         <el-button type="warning" @click="refreshData">刷新</el-button>
         <el-select
-          v-model="page.queryBean.status"
+          v-model="filterStatus"
           placeholder="选择订单状态"
           clearable
           @change="handleOrderFilter"
+          style="width: 200px"
         >
           <el-option
             v-for="(item, index) in statusFilterOptions"
@@ -148,12 +149,11 @@ const currentRow = ref<IOrderResDto | null>(null)
 const { loading, start, done } = useLoading(false)
 const { getYMD } = useDateFormat(undefined)
 const { get } = useStorage('local')
-const page = reactive<IPage<{ status: string }>>({
+const filterStatus = ref<string | null>(null)
+const page = reactive<IPage<{ status?: string }>>({
   current: 1,
   size: 10,
-  queryBean: {
-    status: '',
-  },
+  queryBean: {},
   total: 0,
 })
 const canConfirm = (index: string): boolean => {
@@ -194,16 +194,16 @@ const handleOrderAdd = () => {
 const refreshData = () => {
   page.current = 1
   page.size = 10
-  page.queryBean = {
-    status: '',
-  }
+  page.queryBean = {}
   page.total = 0
   getData()
 }
 
 const handleOrderFilter = (index: string) => {
-  page.queryBean.status = index
-  refreshData()
+  page.queryBean = {
+    status: index,
+  }
+  getData()
 }
 
 const handleOrderCancel = async (row: IOrderResDto) => {

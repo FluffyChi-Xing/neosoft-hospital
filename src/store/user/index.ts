@@ -25,10 +25,11 @@ const useUserStore = defineStore('user', {
 
   actions: {
     updateUser(user: userStoreType) {
-      this.user = {
-        ...user,
-        token: this.user.token ?? '', // 防止token丢失
-      }
+      // this.user = {
+      //   ...user,
+      //   token: this.user.token ?? '', // 防止token丢失
+      // }
+      this.user = user
     },
 
     clearUser() {
