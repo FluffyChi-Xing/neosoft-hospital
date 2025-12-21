@@ -101,7 +101,7 @@ const orderList = ref<IOrderResDto[]>([])
 const resetGoodData = () => {
   goodDataList.value = []
   cartList.value = []
-  sideActiveIndex.value = '0'
+  // sideActiveIndex.value = '0'
   // activeIndex.value = 0
 }
 
