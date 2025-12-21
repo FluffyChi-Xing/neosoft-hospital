@@ -76,6 +76,7 @@ export type IStockResDto = {
   count: number
   reserveCount: number
   name: string
+  price: number
   type: string
   status: string
   remark: string

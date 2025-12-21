@@ -7,13 +7,15 @@ import './assets/css/main.css'
 import directives from './directive/index'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { createPinia } from 'pinia'
+import 'vant/es/toast/style';
+import 'vant/es/dialog/style';
+import 'vant/es/notify/style';
+import { Icon } from 'vant';
 
-// 引入mock数据
-// import './mock'
 
 const app = createApp(App)
 const pinia = createPinia()
-
+app.use(Icon)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }

@@ -29,21 +29,21 @@ const props = withDefaults(defineProps<Partial<pageHeaderProps>>(), {
   showBack: true,
 })
 
-const { content, callback, showBack } = toRefs(props)
+const { content } = toRefs(props)
 
 const pageHeaderContent = computed(() => {
   return content.value || 'Page Header'
 })
 
-const router = useRouter()
+// const router = useRouter()
 
-const onBack = async () => {
-  if (showBack.value && callback.value) {
-    await callback.value()
-  } else {
-    router.back(-1)
-  }
-}
+// const onBack = async () => {
+//   if (showBack.value && callback.value) {
+//     await callback.value()
+//   } else {
+//     router.back(-1)
+//   }
+// }
 </script>
 
 <style scoped></style>
