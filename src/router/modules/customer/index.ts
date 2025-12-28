@@ -6,6 +6,7 @@ const customer = {
   component: DEFAULT_LAYOUT,
   meta: {
     title: '移动端订单页',
+    role: ['user'],
   },
   children: [
     {

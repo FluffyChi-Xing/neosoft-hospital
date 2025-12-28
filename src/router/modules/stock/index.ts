@@ -6,6 +6,7 @@ const medicine = {
   component: DEFAULT_LAYOUT,
   meta: {
     title: '库存',
+    role: ['admin']
   },
   children: [
     {

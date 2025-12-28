@@ -6,7 +6,7 @@ const user = {
   component: DEFAULT_LAYOUT,
   meta: {
     title: '用户管理',
-    permission: ['doctor'],
+    role: ['admin', 'user']
   },
   children: [
     {

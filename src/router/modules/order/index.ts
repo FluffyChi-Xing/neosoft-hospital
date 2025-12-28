@@ -6,6 +6,7 @@ const appointment = {
   component: DEFAULT_LAYOUT,
   meta: {
     title: '订单管理',
+    role: ['admin']
   },
   children: [
     {

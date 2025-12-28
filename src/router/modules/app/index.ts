@@ -6,6 +6,7 @@ const app = {
   component: DEFAULT_LAYOUT,
   meta: {
     title: '首页',
+    role: ['admin']
   },
   children: [
     {

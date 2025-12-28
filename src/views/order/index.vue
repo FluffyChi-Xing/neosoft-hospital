@@ -192,10 +192,6 @@ const handleOrderAdd = () => {
 }
 
 const refreshData = () => {
-  page.current = 1
-  page.size = 10
-  page.queryBean = {}
-  page.total = 0
   getData()
 }
 
